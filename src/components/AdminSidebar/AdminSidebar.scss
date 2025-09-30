@@ -24,6 +24,16 @@
     box-shadow: $shadow-lg;
     overflow: hidden;
   }
+  
+  // Desktop sticky mode
+  &.desktop-sticky {
+    .MuiDrawer-paper {
+      position: fixed;
+      top: 70px; // Account for header height
+      height: calc(100vh - 70px);
+      z-index: 1200;
+    }
+  }
 }
 
 // Sidebar Container
@@ -329,6 +339,19 @@
 }
 
 // Responsive Design
+@media (max-width: 1023px) {
+  .admin-sidebar-drawer {
+    &.desktop-sticky {
+      .MuiDrawer-paper {
+        position: relative;
+        top: auto;
+        height: 100vh;
+        z-index: auto;
+      }
+    }
+  }
+}
+
 @media (max-width: 768px) {
   .admin-sidebar-drawer .MuiDrawer-paper {
     width: 260px;

@@ -19,6 +19,25 @@ const AdminDashboard = () => {
   const [merchants, setMerchants] = useState([]);
   const [notifications, setNotifications] = useState([]);
   const [selectedMerchantForDataGrid, setSelectedMerchantForDataGrid] = useState(null);
+  
+  // Make sidebar always open on desktop
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth >= 1024) {
+        setSidebarOpen(true);
+      } else {
+        setSidebarOpen(false);
+      }
+    };
+    
+    // Set initial state
+    handleResize();
+    
+    // Listen for resize events
+    window.addEventListener('resize', handleResize);
+    
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   // Mock data for development
   useEffect(() => {
@@ -168,14 +187,24 @@ const AdminDashboard = () => {
     <ThemeProvider theme={theme}>
       <div className="admin-dashboard">
         <AdminHeader 
-          onMenuClick={() => setSidebarOpen(!sidebarOpen)}
+          onMenuClick={() => {
+            // Only toggle on mobile
+            if (window.innerWidth < 1024) {
+              setSidebarOpen(!sidebarOpen);
+            }
+          }}
           unreadNotifications={getUnreadNotificationsCount()}
         />
         
         <div className="dashboard-content">
           <AdminSidebar 
             isOpen={sidebarOpen} 
-            onClose={() => setSidebarOpen(false)}
+            onClose={() => {
+              // Only close on mobile
+              if (window.innerWidth < 1024) {
+                setSidebarOpen(false);
+              }
+            }}
             activeView={activeView}
             onViewChange={handleViewChange}
             unreadNotifications={getUnreadNotificationsCount()}

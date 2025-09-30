@@ -7,11 +7,12 @@ import { useLogout } from '../../utils/logout';
 
 const Header = ({ currentStep, totalSteps, onMenuClick }) => {
   const fullname = localStorage.getItem("fullname");
+  const email = localStorage.getItem("email");
   const firstLetter = fullname ? fullname.charAt(0).toUpperCase() : "?";
   const [anchorEl, setAnchorEl] = useState(null);
   const [userProfile, setUserProfile] = useState({
     fullname: fullname || 'User',
-    email: '',
+    email: email || '',
     notifications: 3
   });
   const handleLogout = useLogout();
@@ -36,7 +37,7 @@ const Header = ({ currentStep, totalSteps, onMenuClick }) => {
           // Extract user info from the response
           const userInfo = {
             fullname: userData.fullname || userData.name || fullname || 'User',
-            email: userData.email || '',
+            email: userData.email || email || '',
             notifications: 3
           };
           
@@ -47,14 +48,14 @@ const Header = ({ currentStep, totalSteps, onMenuClick }) => {
         // Fallback to localStorage data
         setUserProfile({
           fullname: fullname || 'User',
-          email: '',
+          email: email || '',
           notifications: 3
         });
       }
     };
 
     fetchUserProfile();
-  }, [fullname]);
+  }, [fullname, email]);
 
   const handleMenuOpen = (event) => {
     setAnchorEl(event.currentTarget);
@@ -86,13 +87,14 @@ const Header = ({ currentStep, totalSteps, onMenuClick }) => {
           <span></span>
           <span></span>
         </button>
+        <img style={{ height: '200px'}} src="src/assets/logo.png" alt="Compliance Web" />
         <div className="logo">
-          <img src="src/assets/logo.png" alt="Compliance Web" />
-          <span>Compliance Web</span>
+         <div style={{width: '100px', }}></div>
+          <span>Compliance Website</span>
         </div>
       </div>
 
-      <div className="header-center">
+      {/* <div className="header-center"> */}
         <Stepper activeStep={currentStep - 1} sx={{ 
           padding: '0',
           '& .MuiStepLabel-root': {
@@ -128,16 +130,16 @@ const Header = ({ currentStep, totalSteps, onMenuClick }) => {
             );
           })}
         </Stepper>
-      </div>
+      {/* </div> */}
 
       <div className="header-right">
         <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
           <div className="user-profile-card">
             <div className="user-info">
               <div className="user-name">{userProfile.fullname}</div>
-              {userProfile.email && (
+              {/* {userProfile.email && (
                 <div className="user-email">{userProfile.email}</div>
-              )}
+              )} */}
             </div>
           </div>
           <Tooltip title="Alerts • No alerts">

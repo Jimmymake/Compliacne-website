@@ -1,11 +1,59 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import './Sidebar.scss';
 import { useLogout } from '../../utils/logout';
 import pepForm from '../../assets/PEP Form.pdf';
 import FileDownloadIcon from '@mui/icons-material/FileDownload';
 
 const Sidebar = ({ isOpen, onClose, currentStep }) => {
+  const fullname = localStorage.getItem("fullname");
+  const email = localStorage.getItem("email");
+  const firstLetter = fullname ? fullname.charAt(0).toUpperCase() : "?";
+  const [userProfile, setUserProfile] = useState({
+    fullname: fullname || 'User',
+    email: email || '',
+    notifications: 3
+  });
   const handleLogout = useLogout();
+  
+  // Fetch user profile data
+  useEffect(() => {
+    const fetchUserProfile = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        if (!token) return;
+
+        const response = await fetch('http://localhost:4000/api/user/profile', {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+
+        if (response.ok) {
+          const userData = await response.json();
+          console.log('Sidebar - User Profile Data:', userData);
+          
+          // Extract user info from the response
+          const userInfo = {
+            fullname: userData.fullname || userData.name || fullname || 'User',
+            email: userData.email || email || '',
+            notifications: 3
+          };
+          
+          setUserProfile(userInfo);
+        }
+      } catch (error) {
+        console.error('Error fetching user profile in sidebar:', error);
+        // Fallback to localStorage data
+        setUserProfile({
+          fullname: fullname || 'User',
+          email: email || '',
+          notifications: 3
+        });
+      }
+    };
+
+    fetchUserProfile();
+  }, [fullname, email]);
   
   const menuItems = [
     { id: 1, title: 'Company Information', icon: '🏢', path: '/company-info' },
@@ -115,11 +163,11 @@ const Sidebar = ({ isOpen, onClose, currentStep }) => {
         <div className="sidebar-footer">
           <div className="user-info">
             <div className="user-avatar">
-              <span>J</span>
+              <span>{firstLetter}</span>
             </div>
             <div className="user-details">
-              <h4>Jimmy Mayeku</h4>
-              <p>jimmy@mamlakahub.com</p>
+              <h4>{userProfile.fullname}</h4>
+            <p style={{fontSize: '10px'}}>{userProfile.email || 'Loading...'} </p>
             </div>
             <div className="notification-bell">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">

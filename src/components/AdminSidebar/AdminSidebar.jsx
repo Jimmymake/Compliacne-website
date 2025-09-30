@@ -156,10 +156,13 @@ const AdminSidebar = ({ isOpen, onClose, activeView, onViewChange, unreadNotific
     </Box>
   );
 
+  // Determine if we're on desktop (persistent) or mobile (temporary)
+  const isDesktop = window.innerWidth >= 1024;
+  
   return (
     <>
-      {/* Mobile Overlay */}
-      {isOpen && (
+      {/* Mobile Overlay - only show on mobile */}
+      {isOpen && !isDesktop && (
         <div 
           className="sidebar-overlay" 
           onClick={onClose}
@@ -167,10 +170,10 @@ const AdminSidebar = ({ isOpen, onClose, activeView, onViewChange, unreadNotific
       )}
       
       <Drawer
-        variant="temporary"
+        variant={isDesktop ? "persistent" : "temporary"}
         open={isOpen}
         onClose={onClose}
-        className="admin-sidebar-drawer"
+        className={`admin-sidebar-drawer ${isDesktop ? 'desktop-sticky' : ''}`}
         ModalProps={{
           keepMounted: true, // Better open performance on mobile
         }}
