@@ -1,0 +1,345 @@
+@use '../../../styles/variables' as *;
+
+.dashboard-overview {
+  .page-title {
+    color: $text-primary;
+    font-weight: 700;
+    margin-bottom: $spacing-sm;
+    background: linear-gradient(135deg, $primary, $accent);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  
+  .page-subtitle {
+    color: $muted;
+    margin-bottom: $spacing-xl;
+    font-size: 1.1rem;
+  }
+}
+
+// Metrics Grid
+.metrics-grid {
+  margin-bottom: $spacing-xl;
+  
+  .metric-card {
+    background: $card;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: $border-radius-lg;
+    padding: $spacing-xl;
+    text-align: center;
+    transition: all $transition-normal;
+    position: relative;
+    overflow: hidden;
+    
+    &::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, $primary, $accent);
+      transform: scaleX(0);
+      transition: transform $transition-normal;
+    }
+    
+    &:hover {
+      transform: translateY(-4px);
+      box-shadow: $shadow-lg;
+      border-color: rgba(91, 141, 239, 0.3);
+      
+      &::before {
+        transform: scaleX(1);
+      }
+      
+      .metric-icon {
+        transform: scale(1.2) rotate(5deg);
+      }
+    }
+    
+    .metric-icon {
+      font-size: 2.5rem;
+      margin-bottom: $spacing-md;
+      transition: all $transition-normal;
+      display: block;
+    }
+    
+    .metric-value {
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: $text-primary;
+      margin-bottom: $spacing-sm;
+      background: linear-gradient(135deg, $primary, $accent);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    
+    .metric-label {
+      color: $muted;
+      font-size: 0.875rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      font-weight: 600;
+      margin-bottom: $spacing-sm;
+    }
+    
+    .metric-change {
+      font-size: 0.8rem;
+      font-weight: 600;
+      
+      &.positive {
+        color: $success;
+      }
+      
+      &.negative {
+        color: $error;
+      }
+    }
+  }
+}
+
+// Chart Containers
+.chart-container {
+  background: $card;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: $border-radius-lg;
+  padding: $spacing-xl;
+  margin-bottom: $spacing-lg;
+  transition: all $transition-normal;
+  
+  &:hover {
+    border-color: rgba(91, 141, 239, 0.2);
+    box-shadow: $shadow-md;
+  }
+  
+  .chart-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: $spacing-lg;
+    
+    h3 {
+      color: $text-primary;
+      font-weight: 600;
+      margin: 0;
+    }
+  }
+  
+  .chart-placeholder {
+    height: 300px;
+    background: rgba(255, 255, 255, 0.02);
+    border: 2px dashed rgba(255, 255, 255, 0.1);
+    border-radius: $border-radius-md;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: $muted;
+    text-align: center;
+    transition: all $transition-normal;
+    
+    &:hover {
+      border-color: rgba(91, 141, 239, 0.3);
+      background: rgba(255, 255, 255, 0.05);
+    }
+    
+    small {
+      margin-top: $spacing-sm;
+      font-size: 0.75rem;
+      opacity: 0.7;
+    }
+  }
+}
+
+// Admin Cards
+.admin-card {
+  background: $card;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: $border-radius-lg;
+  padding: $spacing-xl;
+  margin-bottom: $spacing-lg;
+  transition: all $transition-normal;
+  
+  &:hover {
+    border-color: rgba(91, 141, 239, 0.2);
+    box-shadow: $shadow-md;
+  }
+  
+  .admin-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: $spacing-lg;
+    
+    h3 {
+      color: $text-primary;
+      font-weight: 600;
+      margin: 0;
+    }
+    
+    .activity-count {
+      background: linear-gradient(135deg, $primary, $accent);
+      color: white;
+      padding: $spacing-xs $spacing-sm;
+      border-radius: $border-radius-sm;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+  }
+}
+
+// Activity List
+.activity-list {
+  .activity-item {
+    display: flex;
+    align-items: flex-start;
+    gap: $spacing-md;
+    padding: $spacing-md 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    transition: all $transition-fast;
+    
+    &:last-child {
+      border-bottom: none;
+    }
+    
+    &:hover {
+      background: rgba(255, 255, 255, 0.02);
+      margin: 0 (-$spacing-md);
+      padding: $spacing-md;
+      border-radius: $border-radius-sm;
+    }
+    
+    .activity-icon {
+      font-size: 1.5rem;
+      min-width: 32px;
+      text-align: center;
+    }
+    
+    .activity-content {
+      flex: 1;
+      
+      .activity-message {
+        color: $text-primary;
+        font-weight: 500;
+        margin-bottom: $spacing-xs;
+        line-height: 1.4;
+      }
+      
+      .activity-timestamp {
+        color: $muted;
+        font-size: 0.8rem;
+      }
+    }
+  }
+}
+
+// Quick Stats
+.quick-stats {
+  .stat-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: $spacing-md 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    
+    &:last-child {
+      border-bottom: none;
+    }
+    
+    .stat-label {
+      color: $muted;
+      font-size: 0.875rem;
+    }
+    
+    .stat-value {
+      color: $text-primary;
+      font-weight: 600;
+      font-size: 0.875rem;
+    }
+  }
+}
+
+// Responsive Design
+@media (max-width: 768px) {
+  .dashboard-overview {
+    .page-title {
+      font-size: 1.75rem;
+    }
+    
+    .page-subtitle {
+      font-size: 1rem;
+    }
+  }
+  
+  .metrics-grid {
+    .metric-card {
+      padding: $spacing-lg;
+      
+      .metric-icon {
+        font-size: 2rem;
+      }
+      
+      .metric-value {
+        font-size: 2rem;
+      }
+    }
+  }
+  
+  .chart-container {
+    padding: $spacing-lg;
+    
+    .chart-placeholder {
+      height: 250px;
+    }
+  }
+  
+  .admin-card {
+    padding: $spacing-lg;
+  }
+}
+
+@media (max-width: 480px) {
+  .metrics-grid {
+    .metric-card {
+      padding: $spacing-md;
+      
+      .metric-icon {
+        font-size: 1.75rem;
+      }
+      
+      .metric-value {
+        font-size: 1.75rem;
+      }
+    }
+  }
+  
+  .chart-container {
+    padding: $spacing-md;
+    
+    .chart-placeholder {
+      height: 200px;
+      font-size: 0.875rem;
+    }
+  }
+  
+  .admin-card {
+    padding: $spacing-md;
+  }
+  
+  .activity-list {
+    .activity-item {
+      .activity-icon {
+        font-size: 1.25rem;
+        min-width: 24px;
+      }
+      
+      .activity-content {
+        .activity-message {
+          font-size: 0.875rem;
+        }
+      }
+    }
+  }
+}

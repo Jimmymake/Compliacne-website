@@ -1,0 +1,454 @@
+@use '../../styles/variables' as *;
+
+.user-header {
+  background: linear-gradient(135deg, rgba(15, 23, 42, 0.95), rgba(11, 18, 32, 0.95)) !important;
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  z-index: 1200;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  
+  // Subtle gradient overlay
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(90deg, transparent, rgba(139, 92, 246, 0.05), transparent);
+    pointer-events: none;
+  }
+}
+
+.user-toolbar {
+  min-height: 70px !important;
+  padding: 0 $spacing-lg !important;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+// Header Left Section
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: $spacing-md;
+  
+  .menu-button {
+    color: $text-primary;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: all $transition-normal;
+    
+    &:hover {
+      background: rgba(139, 92, 246, 0.1);
+      border-color: rgba(139, 92, 246, 0.3);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 15px rgba(139, 92, 246, 0.2);
+    }
+  }
+  
+  .header-brand {
+    display: flex;
+    align-items: center;
+    gap: $spacing-md;
+    
+        .brand-logo {
+          width: 48px;
+          height: 48px;
+          background: linear-gradient(135deg, #5b8def, #3b82f6, #2563eb);
+          border-radius: 12px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: white;
+          box-shadow: 0 4px 15px rgba(91, 141, 239, 0.3);
+          transition: all $transition-normal;
+          position: relative;
+          overflow: hidden;
+      
+      &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+        transform: translateX(-100%);
+        transition: transform 0.6s ease;
+      }
+      
+          &:hover {
+            transform: translateY(-2px) scale(1.05);
+            box-shadow: 0 8px 25px rgba(91, 141, 239, 0.4);
+
+            &::before {
+              transform: translateX(100%);
+            }
+          }
+      
+      svg {
+        color: white;
+        width: 24px;
+        height: 24px;
+        z-index: 1;
+      }
+    }
+    
+        .brand-text {
+          .brand-title {
+            color: #5b8def;
+            font-weight: 700;
+            margin: 0;
+            font-size: 1.1rem;
+            letter-spacing: 0.5px;
+          }
+
+          .brand-subtitle {
+            color: #3b82f6;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin: 0;
+            font-weight: 500;
+            text-decoration: underline;
+            text-underline-offset: 2px;
+          }
+        }
+  }
+}
+
+// Header Center Section - Progress Indicator
+.header-center {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  max-width: 400px;
+  margin: 0 $spacing-xl;
+  
+  .progress-indicator {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: $border-radius-lg;
+    padding: $spacing-sm $spacing-md;
+    min-width: 200px;
+    text-align: center;
+    
+    .progress-label {
+      color: $muted;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      font-weight: 600;
+      display: block;
+      margin-bottom: $spacing-xs;
+    }
+    
+    .progress-bar {
+      width: 100%;
+      height: 6px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 3px;
+      overflow: hidden;
+      margin-bottom: $spacing-xs;
+      
+      .progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #5b8def, #3b82f6);
+        border-radius: 3px;
+        transition: width $transition-slow;
+        position: relative;
+        
+        &::after {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+          animation: shimmer 2s infinite;
+        }
+      }
+    }
+    
+    .progress-text {
+      color: $text-primary;
+      font-size: 0.75rem;
+      font-weight: 500;
+    }
+  }
+}
+
+// Header Right Section
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: $spacing-md;
+  
+  .notification-button {
+    color: $text-primary;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: all $transition-normal;
+    
+    &:hover {
+      background: rgba(139, 92, 246, 0.1);
+      border-color: rgba(139, 92, 246, 0.3);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 15px rgba(139, 92, 246, 0.2);
+    }
+    
+    .MuiBadge-badge {
+      background: linear-gradient(135deg, #ef4444, #dc2626);
+      color: white;
+      font-weight: 600;
+      font-size: 0.7rem;
+      min-width: 18px;
+      height: 18px;
+      border: 2px solid rgba(15, 23, 42, 0.95);
+    }
+  }
+  
+  .user-button {
+    color: $text-primary;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: all $transition-normal;
+    
+    &:hover {
+      background: rgba(139, 92, 246, 0.1);
+      border-color: rgba(139, 92, 246, 0.3);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 15px rgba(139, 92, 246, 0.2);
+    }
+  }
+  
+  .user-avatar {
+    background: linear-gradient(135deg, #5b8def, #3b82f6);
+    font-weight: 700;
+    font-size: 0.875rem;
+    box-shadow: 0 2px 8px rgba(139, 92, 246, 0.3);
+  }
+}
+
+// Notification Menu
+.notification-menu {
+  .MuiPaper-root {
+    background: $card;
+    border: 1px solid $border-color;
+    border-radius: $border-radius-lg;
+    box-shadow: $shadow-lg;
+    backdrop-filter: blur(20px);
+    min-width: 350px;
+    max-width: 400px;
+  }
+  
+  .notification-header {
+    padding: $spacing-md $spacing-lg;
+    border-bottom: 1px solid $border-color;
+    
+    h6 {
+      margin: 0 0 4px 0;
+      color: $text-primary;
+      font-weight: 600;
+    }
+    
+    .MuiTypography-caption {
+      color: $muted;
+    }
+  }
+  
+  .notification-item {
+    padding: $spacing-md $spacing-lg;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    transition: all $transition-fast;
+    
+    &:hover {
+      background: rgba(255, 255, 255, 0.05);
+    }
+    
+    &.unread {
+      background: rgba(139, 92, 246, 0.05);
+      border-left: 3px solid #5b8def;
+    }
+    
+    .notification-content {
+      display: flex;
+      gap: $spacing-md;
+      width: 100%;
+      
+      .notification-icon {
+        font-size: 1.25rem;
+        min-width: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      
+      .notification-details {
+        flex: 1;
+        
+        .notification-title {
+          color: $text-primary;
+          font-weight: 600;
+          margin-bottom: 4px;
+        }
+        
+        .notification-message {
+          color: $muted;
+          margin-bottom: 4px;
+          line-height: 1.4;
+        }
+        
+        .notification-time {
+          color: $muted;
+          font-size: 0.75rem;
+        }
+      }
+    }
+  }
+}
+
+// User Menu
+.user-menu {
+  .MuiPaper-root {
+    background: $card;
+    border: 1px solid $border-color;
+    border-radius: $border-radius-lg;
+    box-shadow: $shadow-lg;
+    backdrop-filter: blur(20px);
+    min-width: 250px;
+  }
+  
+  .user-menu-header {
+    padding: $spacing-lg;
+    display: flex;
+    align-items: center;
+    gap: $spacing-md;
+    border-bottom: 1px solid $border-color;
+    
+    .user-avatar-large {
+      width: 48px;
+      height: 48px;
+      background: linear-gradient(135deg, #5b8def, #3b82f6);
+      font-weight: 700;
+      font-size: 1.25rem;
+      box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
+    }
+    
+    .user-info {
+      .MuiTypography-subtitle1 {
+        color: $text-primary;
+        font-weight: 600;
+        margin: 0;
+      }
+      
+      .MuiTypography-caption {
+        color: $muted;
+      }
+    }
+  }
+  
+  .MuiMenuItem-root {
+    color: $text-primary;
+    transition: all $transition-fast;
+    
+    &:hover {
+      background: rgba(255, 255, 255, 0.05);
+    }
+    
+    .MuiListItemIcon-root {
+      color: $muted;
+      min-width: 40px;
+    }
+    
+    .MuiListItemText-root {
+      .MuiTypography-root {
+        color: $text-primary;
+        font-weight: 500;
+      }
+    }
+  }
+}
+
+// Animations
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+// Responsive Design
+@media (max-width: 768px) {
+  .user-toolbar {
+    padding: 0 $spacing-md !important;
+    min-height: 60px !important;
+  }
+  
+  .header-left {
+    .header-brand {
+      .brand-text {
+        display: none;
+      }
+    }
+  }
+  
+  .header-center {
+    display: none;
+  }
+  
+  .notification-menu .MuiPaper-root {
+    min-width: 300px;
+    max-width: 90vw;
+  }
+  
+  .user-menu .MuiPaper-root {
+    min-width: 200px;
+  }
+}
+
+@media (max-width: 480px) {
+  .user-toolbar {
+    padding: 0 $spacing-sm !important;
+  }
+  
+  .header-left {
+    gap: $spacing-sm;
+    
+    .header-brand {
+      .brand-logo {
+        width: 32px;
+        height: 32px;
+        
+        svg {
+          width: 20px;
+          height: 20px;
+        }
+      }
+    }
+  }
+  
+  .header-right {
+    gap: 4px;
+  }
+}
+
+// Dark mode enhancements
+@media (prefers-color-scheme: dark) {
+  .user-header {
+    background: rgba(0, 0, 0, 0.8) !important;
+  }
+}
+
+// High contrast mode
+@media (prefers-contrast: high) {
+  .user-header {
+    border-bottom: 2px solid $text-primary;
+  }
+}

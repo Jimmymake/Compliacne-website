@@ -1,0 +1,267 @@
+@use '../../styles/variables' as *;
+
+.user-dashboard {
+  min-height: 100vh;
+  background: $background;
+  color: $text-primary;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.dashboard-content {
+  display: flex;
+  flex: 1;
+  position: relative;
+  margin-top: 70px; // Account for fixed header
+}
+
+.main-content {
+  flex: 1;
+  padding: 0;
+  margin-left: 0;
+  transition: margin-left 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  min-height: calc(100vh - 70px - 60px); // Subtract header and footer height
+  overflow: hidden;
+  
+  @media (min-width: 1024px) {
+    margin-left: 320px; // Sidebar width on desktop
+  }
+}
+
+.content-wrapper {
+  flex: 1;
+  overflow-y: auto;
+  padding: $spacing-xl $spacing-xl;
+  background: transparent;
+  
+  // Add top spacing to prevent content from being too close to header
+  padding-top: $spacing-xl * 2;
+  
+  @media (max-width: 768px) {
+    padding: $spacing-lg $spacing-lg;
+    padding-top: $spacing-xl * 1.5;
+  }
+  
+  @media (max-width: 480px) {
+    padding: $spacing-md $spacing-md;
+    padding-top: $spacing-xl;
+  }
+  
+  // Ensure content is not blurred
+  .MuiBox-root {
+    background: transparent;
+    backdrop-filter: none;
+    filter: none;
+  }
+}
+
+// Form container styling
+.form-container {
+  background: $card;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: $border-radius-lg;
+  padding: $spacing-xl;
+  margin-bottom: $spacing-lg;
+  box-shadow: $shadow-md;
+  backdrop-filter: blur(20px);
+  
+  // Ensure no blur on form content
+  * {
+    backdrop-filter: none;
+    filter: none;
+  }
+}
+
+// Step navigation buttons
+.step-navigation {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: $spacing-xl;
+  padding: $spacing-lg;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: $border-radius-lg;
+  
+  .MuiButton-root {
+    padding: $spacing-sm $spacing-lg;
+    border-radius: $border-radius-md;
+    font-weight: 600;
+    text-transform: none;
+    transition: all $transition-normal;
+    
+    &.MuiButton-text {
+      color: $muted;
+      
+      &:hover {
+        color: $text-primary;
+        background: rgba(255, 255, 255, 0.05);
+      }
+      
+      &:disabled {
+        color: rgba(255, 255, 255, 0.3);
+      }
+    }
+    
+    &.MuiButton-contained {
+      background: linear-gradient(135deg, #5b8def, #3b82f6);
+      color: white;
+      box-shadow: $shadow-sm;
+      
+      &:hover {
+        background: linear-gradient(135deg, #3b82f6, #2563eb);
+        transform: translateY(-2px);
+        box-shadow: $shadow-md;
+      }
+    }
+  }
+}
+
+// Congratulations component styling
+.congratulations-container {
+  text-align: center;
+  padding: $spacing-xl * 2;
+  background: $card;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: $border-radius-lg;
+  box-shadow: $shadow-lg;
+  
+  h1 {
+    color: $text-primary;
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: $spacing-lg;
+    background: linear-gradient(135deg, #5b8def, #3b82f6);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  
+  p {
+    color: $muted;
+    font-size: 1.1rem;
+    margin-bottom: $spacing-xl;
+  }
+}
+
+// Ensure sidebar doesn't blur main content
+.sidebar-overlay {
+  backdrop-filter: blur(4px);
+  z-index: 998;
+}
+
+.sidebar {
+  z-index: 999;
+  
+  // Ensure sidebar content is not blurred
+  * {
+    backdrop-filter: none;
+    filter: none;
+  }
+}
+
+// Fix for any potential blur issues
+.user-dashboard {
+  // Ensure main content is never blurred
+  .main-content,
+  .content-wrapper,
+  .form-container,
+  .MuiBox-root {
+    backdrop-filter: none !important;
+    filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+}
+
+// Responsive adjustments
+@media (max-width: 768px) {
+  .dashboard-content {
+    margin-top: 60px; // Smaller header on mobile
+  }
+  
+  .main-content {
+    min-height: calc(100vh - 60px - 60px);
+  }
+  
+  .content-wrapper {
+    padding-top: $spacing-lg;
+  }
+}
+
+@media (max-width: 480px) {
+  .content-wrapper {
+    padding: $spacing-md;
+    padding-top: $spacing-lg;
+  }
+  
+  .form-container {
+    padding: $spacing-lg;
+  }
+  
+  .step-navigation {
+    padding: $spacing-md;
+    flex-direction: column;
+    gap: $spacing-md;
+    
+    .MuiButton-root {
+      width: 100%;
+    }
+  }
+}
+
+// Dark mode enhancements
+@media (prefers-color-scheme: dark) {
+  .user-dashboard {
+    background: rgba(0, 0, 0, 0.95);
+  }
+  
+  .form-container {
+    background: rgba(0, 0, 0, 0.6);
+  }
+}
+
+// High contrast mode
+@media (prefers-contrast: high) {
+  .form-container {
+    border: 2px solid $text-primary;
+  }
+  
+  .step-navigation {
+    border: 2px solid $text-primary;
+  }
+}
+
+// Animation for smooth transitions
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.content-wrapper {
+  animation: fadeInUp 0.6s ease-out;
+}
+
+// Ensure proper z-index stacking
+.user-dashboard {
+  position: relative;
+  z-index: 1;
+}
+
+.dashboard-content {
+  position: relative;
+  z-index: 2;
+}
+
+.main-content {
+  position: relative;
+  z-index: 3;
+}

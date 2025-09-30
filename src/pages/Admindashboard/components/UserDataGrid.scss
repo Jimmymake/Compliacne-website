@@ -1,0 +1,322 @@
+@use '../../../styles/variables' as *;
+
+.user-data-grid {
+  padding: $spacing-xl;
+  background: transparent;
+  min-height: 100vh;
+
+  .stat-card {
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.02), rgba(255, 255, 255, 0.01));
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 14px;
+    box-shadow: 0 10px 30px rgba(2, 6, 23, 0.6);
+    backdrop-filter: blur(20px);
+    transition: all $transition-normal;
+    height: 100%;
+
+    &:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 15px 40px rgba(2, 6, 23, 0.8);
+      border-color: rgba(91, 141, 239, 0.3);
+    }
+
+    .MuiCardContent-root {
+      padding: $spacing-lg;
+    }
+
+    .stat-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(91, 141, 239, 0.1);
+      color: #5b8def;
+      transition: all $transition-normal;
+
+      svg {
+        font-size: 1.5rem;
+      }
+    }
+
+    &:hover .stat-icon {
+      background: rgba(91, 141, 239, 0.2);
+      transform: scale(1.1);
+    }
+  }
+
+  .data-grid-container {
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.02), rgba(255, 255, 255, 0.01));
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 14px;
+    box-shadow: 0 10px 30px rgba(2, 6, 23, 0.6);
+    backdrop-filter: blur(20px);
+    overflow: hidden;
+
+    .MuiPaper-root {
+      background: transparent;
+    }
+  }
+
+  .custom-data-grid {
+    background: transparent;
+    color: $text-primary;
+    border: none;
+
+    .MuiDataGrid-root {
+      border: none;
+      background: transparent;
+    }
+
+    .MuiDataGrid-main {
+      background: transparent;
+    }
+
+    .MuiDataGrid-columnHeaders {
+      background: rgba(255, 255, 255, 0.05);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      
+      .MuiDataGrid-columnHeader {
+        color: $text-primary;
+        font-weight: 600;
+        border-right: 1px solid rgba(255, 255, 255, 0.1);
+        
+        &:hover {
+          background: rgba(91, 141, 239, 0.1);
+        }
+      }
+    }
+
+    .MuiDataGrid-row {
+      background: transparent;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      
+      &:hover {
+        background: rgba(91, 141, 239, 0.1) !important;
+      }
+      
+      &.Mui-selected {
+        background: rgba(91, 141, 239, 0.2) !important;
+        
+        &:hover {
+          background: rgba(91, 141, 239, 0.3) !important;
+        }
+      }
+    }
+
+    .MuiDataGrid-cell {
+      color: $text-primary;
+      border-right: 1px solid rgba(255, 255, 255, 0.05);
+      
+      &:focus {
+        outline: none;
+      }
+    }
+
+    .MuiDataGrid-cellContent {
+      color: $text-primary;
+    }
+
+    .MuiDataGrid-footerContainer {
+      background: rgba(255, 255, 255, 0.05);
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      color: $text-primary;
+    }
+
+    .MuiTablePagination-root {
+      color: $text-primary;
+      
+      .MuiTablePagination-selectLabel,
+      .MuiTablePagination-displayedRows {
+        color: $text-primary;
+      }
+    }
+
+    .MuiIconButton-root {
+      color: $text-primary;
+      
+      &:hover {
+        background: rgba(91, 141, 239, 0.1);
+        color: #5b8def;
+      }
+    }
+
+    .MuiCheckbox-root {
+      color: $text-primary;
+      
+      &.Mui-checked {
+        color: #5b8def;
+      }
+    }
+
+    .MuiChip-root {
+      background: rgba(255, 255, 255, 0.1);
+      color: $text-primary;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      
+      &.MuiChip-colorSuccess {
+        background: rgba(34, 197, 94, 0.2);
+        color: #22c55e;
+        border-color: rgba(34, 197, 94, 0.3);
+      }
+      
+      &.MuiChip-colorWarning {
+        background: rgba(245, 158, 11, 0.2);
+        color: #f59e0b;
+        border-color: rgba(245, 158, 11, 0.3);
+      }
+      
+      &.MuiChip-colorError {
+        background: rgba(239, 68, 68, 0.2);
+        color: #ef4444;
+        border-color: rgba(239, 68, 68, 0.3);
+      }
+      
+      &.MuiChip-colorPrimary {
+        background: rgba(91, 141, 239, 0.2);
+        color: #5b8def;
+        border-color: rgba(91, 141, 239, 0.3);
+      }
+      
+      &.MuiChip-colorInfo {
+        background: rgba(59, 130, 246, 0.2);
+        color: #3b82f6;
+        border-color: rgba(59, 130, 246, 0.3);
+      }
+    }
+
+    .MuiLinearProgress-root {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 4px;
+      
+      .MuiLinearProgress-bar {
+        background: linear-gradient(90deg, #5b8def, #3b82f6);
+        border-radius: 4px;
+      }
+    }
+
+    .MuiAvatar-root {
+      background: linear-gradient(135deg, #5b8def, #3b82f6);
+      font-weight: 600;
+    }
+
+    .MuiButton-root {
+      background: linear-gradient(135deg, #5b8def, #3b82f6);
+      color: white;
+      border-radius: 8px;
+      text-transform: none;
+      font-weight: 600;
+      box-shadow: 0 4px 15px rgba(91, 141, 239, 0.3);
+      transition: all $transition-normal;
+
+      &:hover {
+        background: linear-gradient(135deg, #3b82f6, #2563eb);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(91, 141, 239, 0.4);
+      }
+    }
+  }
+}
+
+// Responsive Design
+@media (max-width: 768px) {
+  .user-data-grid {
+    padding: $spacing-md;
+
+    .stat-card {
+      .MuiCardContent-root {
+        padding: $spacing-md;
+      }
+
+      .stat-icon {
+        width: 40px;
+        height: 40px;
+        
+        svg {
+          font-size: 1.2rem;
+        }
+      }
+    }
+
+    .data-grid-container {
+      .MuiDataGrid-root {
+        font-size: 0.875rem;
+      }
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .user-data-grid {
+    padding: $spacing-sm;
+
+    .stat-card {
+      .MuiCardContent-root {
+        padding: $spacing-sm;
+      }
+    }
+  }
+}
+
+// Loading state
+.user-data-grid {
+  .loading-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 400px;
+    color: $muted;
+
+    .MuiLinearProgress-root {
+      width: 50%;
+      margin-bottom: $spacing-md;
+    }
+  }
+}
+
+// Animation for stat cards
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.stat-card {
+  animation: slideInUp 0.6s ease-out;
+  
+  &:nth-child(1) { animation-delay: 0.1s; }
+  &:nth-child(2) { animation-delay: 0.2s; }
+  &:nth-child(3) { animation-delay: 0.3s; }
+  &:nth-child(4) { animation-delay: 0.4s; }
+}
+
+// Custom scrollbar for data grid
+.custom-data-grid {
+  .MuiDataGrid-virtualScroller {
+    &::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    
+    &::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 4px;
+    }
+    
+    &::-webkit-scrollbar-thumb {
+      background: rgba(91, 141, 239, 0.3);
+      border-radius: 4px;
+      
+      &:hover {
+        background: rgba(91, 141, 239, 0.5);
+      }
+    }
+  }
+}

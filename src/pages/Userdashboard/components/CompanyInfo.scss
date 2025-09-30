@@ -1,0 +1,297 @@
+@use "sass:color";
+
+$primary: #5b8def;
+$accent: #7ef9a3;
+$text: #e6eef8;
+$muted: #97a0b4;
+$card: rgba(255, 255, 255, 0.04);
+$error: #ff6b6b;
+
+.company-info-form {
+  .loading-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem;
+    text-align: center;
+    
+    p {
+      color: $muted;
+      margin-top: 1rem;
+    }
+  }
+
+  .form-header {
+    margin-bottom: 2rem;
+    
+    .header-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 1rem;
+      
+      h2 {
+        color: $primary;
+        font-size: 1.75rem;
+        font-weight: 600;
+        margin: 0 0 0.5rem 0;
+      }
+      
+      p {
+        color: $muted;
+        margin: 0;
+      }
+    }
+    
+    .header-actions {
+      display: flex;
+      gap: 0.5rem;
+      
+      .btn-edit, .btn-cancel {
+        padding: 0.5rem 1rem;
+        border-radius: 6px;
+        font-size: 0.85rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        border: none;
+      }
+      
+      .btn-edit {
+        background: linear-gradient(90deg, $primary, color.adjust($primary, $lightness: -6%));
+        color: white;
+        
+        &:hover {
+          transform: translateY(-1px);
+          box-shadow: 0 4px 15px rgba(91, 141, 239, 0.3);
+        }
+      }
+      
+      .btn-cancel {
+        background: transparent;
+        color: $muted;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        
+        &:hover {
+          background: rgba(255, 255, 255, 0.05);
+          color: $text;
+          border-color: rgba(255, 255, 255, 0.3);
+        }
+      }
+    }
+  }
+}
+
+.kyc-form {
+  .form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+    
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      
+      &.full-width {
+        grid-column: 1 / -1;
+      }
+      
+      label {
+        font-size: 0.9rem;
+        font-weight: 500;
+        color: $text;
+      }
+      
+      input, select, textarea {
+        padding: 0.75rem;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 8px;
+        background: transparent;
+        color: $text;
+        font-size: 0.9rem;
+        transition: all 0.3s ease;
+        
+        &:focus {
+          outline: none;
+          border-color: $primary;
+          box-shadow: 0 0 0 3px rgba(91, 141, 239, 0.1);
+        }
+        
+        &::placeholder {
+          color: $muted;
+        }
+        
+        &.error {
+          border-color: $error;
+          box-shadow: 0 0 0 3px rgba(255, 107, 107, 0.1);
+        }
+      }
+      
+      textarea {
+        resize: vertical;
+        min-height: 80px;
+      }
+      
+      .input-with-icon {
+        position: relative;
+        
+        .calendar-icon {
+          position: absolute;
+          right: 0.75rem;
+          top: 50%;
+          transform: translateY(-50%);
+          pointer-events: none;
+          font-size: 1rem;
+        }
+      }
+      
+      .error-message {
+        color: $error;
+        font-size: 0.8rem;
+        margin-top: 0.25rem;
+      }
+    }
+  }
+  
+  .radio-group {
+    display: flex;
+    gap: 1rem;
+    margin-top: 0.5rem;
+    
+    .radio-label {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      cursor: pointer;
+      font-size: 0.9rem;
+      color: $text;
+      
+      input[type="radio"] {
+        width: auto;
+        margin: 0;
+      }
+      
+      span {
+        user-select: none;
+      }
+    }
+  }
+  
+  .conditional-fields {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 1rem;
+    margin-top: 1rem;
+    padding: 1rem;
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+  }
+  
+  .form-actions {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding-top: 2rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    
+    .btn-secondary {
+      background: transparent;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: $muted;
+      padding: 0.75rem 1.5rem;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      
+      &:hover {
+        background: rgba(255, 255, 255, 0.05);
+        color: $text;
+        border-color: rgba(255, 255, 255, 0.3);
+      }
+    }
+    
+    .btn-primary {
+      background: linear-gradient(90deg, $primary, color.adjust($primary, $lightness: -6%));
+      border: none;
+      color: white;
+      padding: 0.75rem 2rem;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      
+      &:hover:not(:disabled) {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(91, 141, 239, 0.3);
+      }
+      
+      &:active {
+        transform: translateY(0);
+      }
+      
+      &:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+        transform: none;
+        box-shadow: none;
+      }
+    }
+  }
+}
+
+// Responsive design
+@media (max-width: 768px) {
+  .company-info-form .form-header .header-content {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1rem;
+    
+    .header-actions {
+      justify-content: center;
+    }
+  }
+  
+  .kyc-form .form-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  
+  .conditional-fields {
+    grid-template-columns: 1fr !important;
+  }
+  
+  .form-actions {
+    flex-direction: column;
+    gap: 1rem;
+    
+    .btn-secondary,
+    .btn-primary {
+      width: 100%;
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .company-info-form .form-header h2 {
+    font-size: 1.5rem;
+  }
+  
+  .kyc-form .form-grid {
+    gap: 0.75rem;
+  }
+  
+  .form-actions {
+    padding-top: 1.5rem;
+  }
+}

@@ -1,0 +1,393 @@
+@use '../../../styles/variables' as *;
+
+.notifications-page {
+  .page-header {
+    margin-bottom: $spacing-xl;
+    
+    .page-title {
+      color: $text-primary;
+      font-weight: 700;
+      margin-bottom: $spacing-sm;
+      background: linear-gradient(135deg, $primary, $accent);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    
+    .page-subtitle {
+      color: $muted;
+      font-size: 1.1rem;
+    }
+  }
+}
+
+// Filter Section
+.filter-section {
+  background: $card;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: $border-radius-lg;
+  padding: $spacing-lg;
+  margin-bottom: $spacing-lg;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: $spacing-md;
+  
+  .filter-tabs {
+    display: flex;
+    gap: $spacing-sm;
+    flex-wrap: wrap;
+    
+    .filter-tab {
+      padding: $spacing-sm $spacing-md;
+      border-radius: $border-radius-md;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: $muted;
+      cursor: pointer;
+      transition: all $transition-normal;
+      font-size: 0.875rem;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: $spacing-sm;
+      
+      &:hover {
+        background: rgba(255, 255, 255, 0.1);
+        color: $text-primary;
+        transform: translateY(-1px);
+      }
+      
+      &.active {
+        background: linear-gradient(135deg, $primary, $accent);
+        color: white;
+        border-color: transparent;
+        box-shadow: $shadow-sm;
+      }
+      
+      .count-badge {
+        background: rgba(255, 255, 255, 0.2);
+        color: inherit;
+        padding: 2px 6px;
+        border-radius: 10px;
+        font-size: 0.7rem;
+        font-weight: 600;
+        min-width: 18px;
+        text-align: center;
+      }
+    }
+  }
+  
+  .mark-all-read-btn {
+    padding: $spacing-sm $spacing-md;
+    background: rgba(34, 197, 94, 0.1);
+    border: 1px solid rgba(34, 197, 94, 0.2);
+    border-radius: $border-radius-md;
+    color: $success;
+    cursor: pointer;
+    transition: all $transition-normal;
+    font-size: 0.875rem;
+    font-weight: 500;
+    
+    &:hover {
+      background: rgba(34, 197, 94, 0.2);
+      transform: translateY(-1px);
+    }
+  }
+}
+
+// Notifications List
+.notifications-list {
+  .notification-item {
+    background: $card;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: $border-radius-lg;
+    padding: $spacing-lg;
+    margin-bottom: $spacing-md;
+    transition: all $transition-normal;
+    position: relative;
+    overflow: hidden;
+    
+    &::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, $primary, $accent);
+      transform: scaleX(0);
+      transition: transform $transition-normal;
+    }
+    
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: $shadow-md;
+      border-color: rgba(91, 141, 239, 0.3);
+      
+      &::before {
+        transform: scaleX(1);
+      }
+    }
+    
+    &.unread {
+      border-left: 4px solid $primary;
+      background: rgba(91, 141, 239, 0.05);
+      
+      &::before {
+        transform: scaleX(1);
+      }
+    }
+    
+    .notification-content {
+      display: flex;
+      align-items: flex-start;
+      gap: $spacing-md;
+      margin-bottom: $spacing-md;
+      
+      .notification-icon {
+        font-size: 1.5rem;
+        min-width: 32px;
+        text-align: center;
+        margin-top: 4px;
+      }
+      
+      .notification-details {
+        flex: 1;
+        
+        .notification-message {
+          color: $text-primary;
+          font-weight: 500;
+          margin-bottom: $spacing-xs;
+          line-height: 1.4;
+        }
+        
+        .notification-meta {
+          display: flex;
+          align-items: center;
+          gap: $spacing-md;
+          flex-wrap: wrap;
+          
+          .timestamp {
+            color: $muted;
+            font-size: 0.8rem;
+          }
+          
+          .MuiChip-root {
+            font-size: 0.7rem;
+            height: 20px;
+            font-weight: 600;
+          }
+        }
+      }
+    }
+    
+    .notification-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: $spacing-sm;
+      
+      .MuiIconButton-root {
+        color: $muted;
+        transition: all $transition-normal;
+        
+        &:hover {
+          background: rgba(255, 255, 255, 0.1);
+          transform: scale(1.1);
+        }
+        
+        &.mark-read:hover {
+          color: $success;
+          background: rgba(34, 197, 94, 0.1);
+        }
+        
+        &.delete:hover {
+          color: $error;
+          background: rgba(239, 68, 68, 0.1);
+        }
+      }
+    }
+  }
+}
+
+// Empty State
+.empty-state {
+  text-align: center;
+  padding: $spacing-xl * 2;
+  background: $card;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: $border-radius-lg;
+  
+  .empty-icon {
+    font-size: 4rem;
+    margin-bottom: $spacing-lg;
+    opacity: 0.5;
+  }
+  
+  .empty-title {
+    color: $text-primary;
+    font-weight: 600;
+    margin-bottom: $spacing-sm;
+  }
+  
+  .empty-subtitle {
+    color: $muted;
+    font-size: 0.875rem;
+  }
+}
+
+// Notification Stats
+.notification-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: $spacing-lg;
+  margin-top: $spacing-xl;
+  
+  .stat-card {
+    background: $card;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: $border-radius-lg;
+    padding: $spacing-lg;
+    text-align: center;
+    transition: all $transition-normal;
+    
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: $shadow-md;
+      border-color: rgba(91, 141, 239, 0.2);
+    }
+    
+    .stat-value {
+      font-size: 2rem;
+      font-weight: 700;
+      color: $text-primary;
+      margin-bottom: $spacing-sm;
+      background: linear-gradient(135deg, $primary, $accent);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    
+    .stat-label {
+      color: $muted;
+      font-size: 0.875rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      font-weight: 600;
+    }
+  }
+}
+
+// Responsive Design
+@media (max-width: 768px) {
+  .filter-section {
+    flex-direction: column;
+    align-items: stretch;
+    
+    .filter-tabs {
+      justify-content: center;
+      
+      .filter-tab {
+        flex: 1;
+        justify-content: center;
+        min-width: 120px;
+      }
+    }
+    
+    .mark-all-read-btn {
+      width: 100%;
+      text-align: center;
+    }
+  }
+  
+  .notifications-list {
+    .notification-item {
+      padding: $spacing-md;
+      
+      .notification-content {
+        .notification-details {
+          .notification-meta {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: $spacing-xs;
+          }
+        }
+      }
+    }
+  }
+  
+  .notification-stats {
+    grid-template-columns: repeat(2, 1fr);
+    gap: $spacing-md;
+    
+    .stat-card {
+      padding: $spacing-md;
+      
+      .stat-value {
+        font-size: 1.5rem;
+      }
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .filter-section {
+    padding: $spacing-md;
+    
+    .filter-tabs {
+      .filter-tab {
+        padding: $spacing-xs $spacing-sm;
+        font-size: 0.8rem;
+        min-width: 100px;
+      }
+    }
+  }
+  
+  .notifications-list {
+    .notification-item {
+      padding: $spacing-sm;
+      
+      .notification-content {
+        gap: $spacing-sm;
+        
+        .notification-icon {
+          font-size: 1.25rem;
+          min-width: 24px;
+        }
+        
+        .notification-details {
+          .notification-message {
+            font-size: 0.875rem;
+          }
+        }
+      }
+      
+      .notification-actions {
+        justify-content: center;
+        margin-top: $spacing-sm;
+      }
+    }
+  }
+  
+  .notification-stats {
+    grid-template-columns: 1fr;
+    gap: $spacing-sm;
+    
+    .stat-card {
+      padding: $spacing-sm;
+      
+      .stat-value {
+        font-size: 1.25rem;
+      }
+    }
+  }
+  
+  .empty-state {
+    padding: $spacing-xl;
+    
+    .empty-icon {
+      font-size: 3rem;
+    }
+  }
+}

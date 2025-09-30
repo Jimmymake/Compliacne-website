@@ -1,0 +1,427 @@
+@use '../../styles/variables' as *;
+
+// Sidebar Overlay
+.sidebar-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+  z-index: 1199;
+  opacity: 0;
+  animation: fadeIn 0.3s ease forwards;
+}
+
+// Main Sidebar Drawer
+.admin-sidebar-drawer {
+  .MuiDrawer-paper {
+    width: 280px;
+    background: $sidebar-bg;
+    backdrop-filter: blur(20px);
+    border-right: 1px solid $border-color;
+    box-shadow: $shadow-lg;
+    overflow: hidden;
+  }
+}
+
+// Sidebar Container
+.admin-sidebar {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: $sidebar-bg;
+}
+
+// Sidebar Header
+.sidebar-header {
+  padding: $spacing-xl;
+  background: rgba(255, 255, 255, 0.02);
+  border-bottom: 1px solid $border-color;
+  
+  .header-content {
+    display: flex;
+    align-items: center;
+    gap: $spacing-md;
+    margin-bottom: $spacing-md;
+    
+    .brand-logo {
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(135deg, $primary, $accent);
+      border-radius: $border-radius-md;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: $shadow-sm;
+      transition: all $transition-normal;
+      
+      &:hover {
+        transform: translateY(-2px) rotate(5deg);
+        box-shadow: $shadow-md;
+      }
+      
+      .logo-icon {
+        color: white;
+        font-size: 1.5rem;
+      }
+    }
+    
+    .brand-text {
+      .brand-title {
+        color: $text-primary;
+        font-weight: 600;
+        margin: 0;
+        background: linear-gradient(135deg, $primary, $accent);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+      
+      .brand-subtitle {
+        color: $muted;
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin: 0;
+      }
+    }
+  }
+  
+  .header-stats {
+    display: flex;
+    justify-content: center;
+    
+    .status-chip {
+      font-size: 0.7rem;
+      height: 20px;
+      background: rgba(34, 197, 94, 0.1);
+      color: $success;
+      border: 1px solid rgba(34, 197, 94, 0.2);
+    }
+  }
+}
+
+// Sidebar Content
+.sidebar-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: $spacing-lg 0;
+  
+  // Custom scrollbar
+  &::-webkit-scrollbar {
+    width: 4px;
+  }
+  
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  
+  &::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 2px;
+  }
+  
+  &::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.3);
+  }
+}
+
+// Menu Sections
+.menu-section {
+  margin-bottom: $spacing-lg;
+  
+  .section-title {
+    color: $muted;
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin: 0 $spacing-lg $spacing-md $spacing-lg;
+    padding: 0;
+  }
+  
+  .menu-list {
+    padding: 0;
+  }
+}
+
+// Sidebar Items
+.sidebar-item {
+  margin: 0 $spacing-md;
+  border-radius: $border-radius-md;
+  overflow: hidden;
+  
+  .sidebar-button {
+    padding: $spacing-md $spacing-lg;
+    border-radius: $border-radius-md;
+    transition: all $transition-normal;
+    position: relative;
+    color: $muted;
+    
+    &:hover {
+      background: rgba(255, 255, 255, 0.05);
+      color: $text-primary;
+      transform: translateX(4px);
+      
+      .sidebar-icon {
+        color: $primary;
+        transform: scale(1.1);
+      }
+    }
+    
+    &.active {
+      background: linear-gradient(135deg, rgba(91, 141, 239, 0.15), rgba(126, 249, 163, 0.1));
+      color: $text-primary;
+      border-right: 3px solid $primary;
+      
+      .sidebar-icon {
+        color: $primary;
+      }
+      
+      .sidebar-text {
+        font-weight: 600;
+      }
+    }
+    
+    .sidebar-icon {
+      color: inherit;
+      transition: all $transition-fast;
+      min-width: 40px;
+      
+      .MuiBadge-badge {
+        font-size: 0.6rem;
+        height: 16px;
+        min-width: 16px;
+      }
+    }
+    
+    .sidebar-text {
+      .MuiTypography-root {
+        color: inherit;
+        font-weight: 500;
+        font-size: 0.9rem;
+      }
+    }
+    
+    .active-indicator {
+      position: absolute;
+      right: $spacing-md;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 6px;
+      height: 6px;
+      background: $primary;
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+  }
+}
+
+// Dividers
+.sidebar-divider,
+.section-divider {
+  border-color: $border-color;
+  margin: $spacing-md 0;
+}
+
+// Sidebar Footer
+.sidebar-footer {
+  background: rgba(255, 255, 255, 0.02);
+  border-top: 1px solid $border-color;
+  
+  .footer-divider {
+    border-color: $border-color;
+    margin: 0;
+  }
+  
+  .footer-stats {
+    padding: $spacing-lg;
+    
+    .stat-item {
+      .stat-label {
+        color: $muted;
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: $spacing-sm;
+        display: block;
+      }
+      
+      .status-indicator {
+        display: flex;
+        align-items: center;
+        gap: $spacing-sm;
+        
+        .status-dot {
+          width: 8px;
+          height: 8px;
+          border-radius: 50%;
+          animation: pulse 2s infinite;
+          
+          &.online {
+            background: $success;
+            box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7);
+          }
+        }
+        
+        .status-text {
+          color: $muted;
+          font-size: 0.75rem;
+        }
+      }
+    }
+  }
+  
+  .logout-item {
+    .logout-button {
+      padding: $spacing-md $spacing-lg;
+      color: $muted;
+      transition: all $transition-normal;
+      
+      &:hover {
+        background: rgba(239, 68, 68, 0.1);
+        color: $error;
+        
+        .logout-icon {
+          color: $error;
+          transform: scale(1.1);
+        }
+      }
+      
+      .logout-icon {
+        color: inherit;
+        transition: all $transition-fast;
+        min-width: 40px;
+      }
+      
+      .logout-text {
+        .MuiTypography-root {
+          color: inherit;
+          font-weight: 500;
+          font-size: 0.9rem;
+        }
+      }
+    }
+  }
+}
+
+// Animations
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+    transform: translateY(-50%) scale(1);
+  }
+  50% {
+    opacity: 0.5;
+    transform: translateY(-50%) scale(1.2);
+  }
+}
+
+// Responsive Design
+@media (max-width: 768px) {
+  .admin-sidebar-drawer .MuiDrawer-paper {
+    width: 260px;
+  }
+  
+  .sidebar-header {
+    padding: $spacing-lg;
+    
+    .header-content {
+      .brand-logo {
+        width: 32px;
+        height: 32px;
+        
+        .logo-icon {
+          font-size: 1.25rem;
+        }
+      }
+    }
+  }
+  
+  .sidebar-item {
+    margin: 0 $spacing-sm;
+    
+    .sidebar-button {
+      padding: $spacing-sm $spacing-md;
+    }
+  }
+  
+  .sidebar-footer {
+    .footer-stats {
+      padding: $spacing-md;
+    }
+    
+    .logout-item .logout-button {
+      padding: $spacing-sm $spacing-md;
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .admin-sidebar-drawer .MuiDrawer-paper {
+    width: 100%;
+    max-width: 320px;
+  }
+  
+  .sidebar-header {
+    padding: $spacing-md;
+    
+    .header-content {
+      gap: $spacing-sm;
+      
+      .brand-text {
+        .brand-title {
+          font-size: 1rem;
+        }
+        
+        .brand-subtitle {
+          font-size: 0.65rem;
+        }
+      }
+    }
+  }
+  
+  .menu-section {
+    .section-title {
+      margin: 0 $spacing-md $spacing-sm $spacing-md;
+      font-size: 0.65rem;
+    }
+  }
+}
+
+// Dark mode enhancements
+@media (prefers-color-scheme: dark) {
+  .admin-sidebar {
+    background: rgba(0, 0, 0, 0.8);
+  }
+  
+  .sidebar-header {
+    background: rgba(0, 0, 0, 0.2);
+  }
+  
+  .sidebar-footer {
+    background: rgba(0, 0, 0, 0.2);
+  }
+}
+
+// High contrast mode
+@media (prefers-contrast: high) {
+  .admin-sidebar-drawer .MuiDrawer-paper {
+    border-right: 2px solid $text-primary;
+  }
+  
+  .sidebar-item .sidebar-button {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  }
+}

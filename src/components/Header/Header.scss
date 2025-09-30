@@ -1,0 +1,400 @@
+@use '../../styles/variables' as *;
+
+.dashboard-header {
+  background: linear-gradient(135deg, rgba(15, 23, 42, 0.95), rgba(11, 18, 32, 0.95));
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1200;
+  height: 70px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 $spacing-lg;
+  
+  // Subtle gradient overlay
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(90deg, transparent, rgba(139, 92, 246, 0.05), transparent);
+    pointer-events: none;
+  }
+}
+
+// Header Left Section
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: $spacing-md;
+  
+  .menu-toggle {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: $border-radius-sm;
+    padding: $spacing-sm;
+    cursor: pointer;
+    transition: all $transition-normal;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    
+    &:hover {
+      background: rgba(139, 92, 246, 0.1);
+      border-color: rgba(139, 92, 246, 0.3);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 15px rgba(139, 92, 246, 0.2);
+    }
+    
+    span {
+      width: 18px;
+      height: 2px;
+      background: $text-primary;
+      border-radius: 1px;
+      transition: all $transition-fast;
+    }
+    
+    &:hover span {
+      background: #8b5cf6;
+    }
+  }
+  
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: $spacing-md;
+    
+    img {
+      width: 40px;
+      height: 40px;
+      border-radius: 8px;
+      box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
+      transition: all $transition-normal;
+      
+      &:hover {
+        transform: translateY(-2px) scale(1.05);
+        box-shadow: 0 8px 25px rgba(139, 92, 246, 0.4);
+      }
+    }
+    
+    span {
+      color: #c084fc;
+      font-weight: 700;
+      font-size: 1.1rem;
+      letter-spacing: 0.5px;
+    }
+  }
+}
+
+// Header Center Section - Stepper
+.header-center {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  max-width: 600px;
+  margin: 0 $spacing-xl;
+  
+  .MuiStepper-root {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: $border-radius-lg;
+    padding: $spacing-sm $spacing-md;
+    
+    .MuiStep-root {
+      .MuiStepLabel-root {
+        .MuiStepLabel-label {
+          color: $muted;
+          font-size: 0.7rem;
+          font-weight: 500;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+          
+          &.Mui-active {
+            color: #8b5cf6;
+            font-weight: 600;
+          }
+          
+          &.Mui-completed {
+            color: #22c55e;
+            font-weight: 600;
+          }
+        }
+        
+        .MuiStepIcon-root {
+          color: rgba(255, 255, 255, 0.3);
+          
+          &.Mui-active {
+            color: #8b5cf6;
+          }
+          
+          &.Mui-completed {
+            color: #22c55e;
+          }
+          
+          .MuiStepIcon-text {
+            font-size: 0.7rem;
+            font-weight: 600;
+          }
+        }
+      }
+      
+      .MuiStepConnector-root {
+        .MuiStepConnector-line {
+          border-color: rgba(255, 255, 255, 0.1);
+        }
+        
+        &.Mui-active,
+        &.Mui-completed {
+          .MuiStepConnector-line {
+            border-color: #8b5cf6;
+          }
+        }
+      }
+    }
+  }
+}
+
+// Header Right Section
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: $spacing-md;
+  
+  .user-profile-card {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: $border-radius-lg;
+    padding: $spacing-sm $spacing-md;
+    margin-right: $spacing-sm;
+    transition: all $transition-normal;
+    
+    &:hover {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(255, 255, 255, 0.15);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+    
+    .user-info {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      
+      .user-name {
+        color: $text-primary;
+        font-weight: 600;
+        font-size: 0.9rem;
+        line-height: 1.2;
+        margin-bottom: 2px;
+      }
+      
+      .user-email {
+        color: $muted;
+        font-size: 0.75rem;
+        line-height: 1.2;
+        opacity: 0.8;
+      }
+    }
+  }
+  
+  .MuiBox-root {
+    display: flex;
+    align-items: center;
+    gap: $spacing-md;
+    
+    .MuiLink-root {
+      color: $muted;
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 0.9rem;
+      transition: all $transition-normal;
+      
+      &:hover {
+        color: #8b5cf6;
+        transform: translateY(-1px);
+      }
+    }
+    
+    .MuiIconButton-root {
+      color: $text-primary;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      transition: all $transition-normal;
+      
+      &:hover {
+        background: rgba(139, 92, 246, 0.1);
+        border-color: rgba(139, 92, 246, 0.3);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(139, 92, 246, 0.2);
+      }
+      
+      &.MuiIconButton-colorInherit {
+        .MuiSvgIcon-root {
+          color: $text-primary;
+        }
+      }
+    }
+    
+    .MuiAvatar-root {
+      background: linear-gradient(135deg, #8b5cf6, #a855f7);
+      font-weight: 700;
+      font-size: 1.1rem;
+      box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
+      transition: all $transition-normal;
+      cursor: pointer;
+      
+      &:hover {
+        transform: translateY(-2px) scale(1.05);
+        box-shadow: 0 8px 25px rgba(139, 92, 246, 0.4);
+      }
+    }
+  }
+}
+
+// User Menu
+.MuiMenu-root {
+  .MuiPaper-root {
+    background: $card;
+    border: 1px solid $border-color;
+    border-radius: $border-radius-lg;
+    box-shadow: $shadow-lg;
+    backdrop-filter: blur(20px);
+    min-width: 200px;
+    
+    .MuiMenuItem-root {
+      color: $text-primary;
+      transition: all $transition-fast;
+      
+      &:hover {
+        background: rgba(139, 92, 246, 0.1);
+      }
+      
+      .MuiListItemIcon-root {
+        color: $muted;
+        min-width: 40px;
+        
+        .MuiSvgIcon-root {
+          color: inherit;
+        }
+      }
+      
+      .MuiListItemText-root {
+        .MuiTypography-root {
+          color: $text-primary;
+          font-weight: 500;
+        }
+      }
+    }
+  }
+}
+
+// Responsive Design
+@media (max-width: 768px) {
+  .dashboard-header {
+    padding: 0 $spacing-md;
+    height: 60px;
+  }
+  
+  .header-left {
+    .logo {
+      span {
+        display: none;
+      }
+    }
+  }
+  
+  .header-center {
+    display: none;
+  }
+  
+  .header-right {
+    .user-profile-card {
+      display: none; // Hide profile card on mobile to save space
+    }
+    
+    .MuiBox-root {
+      gap: $spacing-sm;
+      
+      .MuiLink-root {
+        display: none;
+      }
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .dashboard-header {
+    padding: 0 $spacing-sm;
+  }
+  
+  .header-left {
+    gap: $spacing-sm;
+    
+    .logo {
+      img {
+        width: 32px;
+        height: 32px;
+      }
+    }
+  }
+  
+  .header-right {
+    .MuiBox-root {
+      .MuiIconButton-root {
+        padding: $spacing-xs;
+      }
+      
+      .MuiAvatar-root {
+        width: 40px;
+        height: 40px;
+        font-size: 1rem;
+      }
+    }
+  }
+}
+
+// Dark mode enhancements
+@media (prefers-color-scheme: dark) {
+  .dashboard-header {
+    background: rgba(0, 0, 0, 0.8);
+  }
+}
+
+// High contrast mode
+@media (prefers-contrast: high) {
+  .dashboard-header {
+    border-bottom: 2px solid $text-primary;
+  }
+  
+  .header-left {
+    .menu-toggle {
+      border: 2px solid $text-primary;
+    }
+  }
+}
+
+// Animation for stepper progress
+@keyframes stepProgress {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.MuiStepIcon-root.Mui-active {
+  animation: stepProgress 2s infinite;
+}

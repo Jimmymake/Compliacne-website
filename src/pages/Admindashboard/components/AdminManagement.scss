@@ -1,0 +1,289 @@
+@use '../../../styles/variables' as *;
+@use "sass:color";
+
+.admin-management {
+  .page-header {
+    margin-bottom: $spacing-xl;
+    
+    .page-title {
+      color: $text-primary;
+      font-weight: 700;
+      margin-bottom: $spacing-sm;
+      background: linear-gradient(135deg, $primary, $accent);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      display: flex;
+      align-items: center;
+      gap: $spacing-sm;
+    }
+    
+    .page-subtitle {
+      color: $muted;
+      font-size: 1.1rem;
+    }
+  }
+}
+
+// Admin Card
+.admin-card {
+  background: $card;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: $border-radius-lg;
+  padding: $spacing-xl;
+  transition: all $transition-normal;
+  
+  &:hover {
+    border-color: rgba(91, 141, 239, 0.2);
+    box-shadow: $shadow-md;
+  }
+  
+  .admin-card-header {
+    margin-bottom: $spacing-xl;
+    
+    h6 {
+      color: $text-primary;
+      font-weight: 600;
+      margin: 0;
+    }
+  }
+}
+
+// Admin Form
+.admin-form {
+  .form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: $spacing-md;
+    margin-top: $spacing-xl;
+    padding-top: $spacing-lg;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    
+    .MuiButton-root {
+      padding: $spacing-sm $spacing-lg;
+      font-weight: 600;
+      text-transform: none;
+      border-radius: $border-radius-md;
+      transition: all $transition-normal;
+      
+      &.MuiButton-outlined {
+        border-color: rgba(255, 255, 255, 0.3);
+        color: rgba(255, 255, 255, 0.7);
+        
+        &:hover {
+          border-color: rgba(255, 255, 255, 0.5);
+          color: white;
+          background: rgba(255, 255, 255, 0.1);
+          transform: translateY(-1px);
+        }
+      }
+      
+      &.MuiButton-contained {
+        background: linear-gradient(135deg, $primary, $accent);
+        box-shadow: $shadow-sm;
+        
+        &:hover {
+          background: linear-gradient(135deg, color.adjust($primary, $lightness: -10%), color.adjust($accent, $lightness: -10%));
+          transform: translateY(-2px);
+          box-shadow: $shadow-md;
+        }
+        
+        &:disabled {
+          background: rgba(255, 255, 255, 0.1);
+          color: rgba(255, 255, 255, 0.3);
+          transform: none;
+          box-shadow: none;
+        }
+      }
+    }
+  }
+}
+
+// Form Field Enhancements
+.MuiTextField-root,
+.MuiFormControl-root {
+  .MuiOutlinedInput-root {
+    transition: all $transition-normal;
+    
+    &:hover {
+      .MuiOutlinedInput-notchedOutline {
+        border-color: rgba(255, 255, 255, 0.3);
+      }
+    }
+    
+    &.Mui-focused {
+      .MuiOutlinedInput-notchedOutline {
+        border-color: $primary;
+        border-width: 2px;
+      }
+    }
+  }
+  
+  .MuiInputLabel-root {
+    transition: all $transition-normal;
+    
+    &.Mui-focused {
+      color: $primary;
+    }
+  }
+  
+  .MuiFormHelperText-root {
+    transition: all $transition-normal;
+  }
+}
+
+// Success/Error States
+.MuiTextField-root {
+  &.Mui-error {
+    .MuiOutlinedInput-root {
+      .MuiOutlinedInput-notchedOutline {
+        border-color: $error;
+      }
+    }
+    
+    .MuiInputLabel-root {
+      color: $error;
+    }
+  }
+}
+
+// Select Enhancements
+.MuiFormControl-root {
+  .MuiSelect-select {
+    &:focus {
+      background: rgba(255, 255, 255, 0.05);
+    }
+  }
+  
+  .MuiOutlinedInput-notchedOutline {
+    border-color: rgba(255, 255, 255, 0.1);
+  }
+}
+
+// Snackbar Enhancements
+.MuiSnackbar-root {
+  .MuiAlert-root {
+    border-radius: $border-radius-md;
+    box-shadow: $shadow-lg;
+    
+    &.MuiAlert-standardSuccess {
+      background: rgba(34, 197, 94, 0.1);
+      color: $success;
+      border: 1px solid rgba(34, 197, 94, 0.2);
+    }
+    
+    &.MuiAlert-standardError {
+      background: rgba(239, 68, 68, 0.1);
+      color: $error;
+      border: 1px solid rgba(239, 68, 68, 0.2);
+    }
+  }
+}
+
+// Loading States
+.loading-overlay {
+  position: relative;
+  
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: $border-radius-lg;
+    z-index: 1;
+  }
+}
+
+// Form Validation
+.validation-error {
+  color: $error;
+  font-size: 0.75rem;
+  margin-top: $spacing-xs;
+  display: flex;
+  align-items: center;
+  gap: $spacing-xs;
+  
+  &::before {
+    content: '⚠';
+    font-size: 0.8rem;
+  }
+}
+
+.validation-success {
+  color: $success;
+  font-size: 0.75rem;
+  margin-top: $spacing-xs;
+  display: flex;
+  align-items: center;
+  gap: $spacing-xs;
+  
+  &::before {
+    content: '✓';
+    font-size: 0.8rem;
+  }
+}
+
+// Responsive Design
+@media (max-width: 768px) {
+  .admin-management {
+    .page-header {
+      .page-title {
+        font-size: 1.75rem;
+      }
+    }
+  }
+  
+  .admin-card {
+    padding: $spacing-lg;
+  }
+  
+  .admin-form {
+    .form-actions {
+      flex-direction: column;
+      
+      .MuiButton-root {
+        width: 100%;
+      }
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .admin-card {
+    padding: $spacing-md;
+  }
+  
+  .admin-form {
+    .form-actions {
+      margin-top: $spacing-lg;
+      padding-top: $spacing-md;
+    }
+  }
+}
+
+// Dark mode enhancements
+@media (prefers-color-scheme: dark) {
+  .admin-card {
+    background: rgba(0, 0, 0, 0.6);
+  }
+}
+
+// High contrast mode
+@media (prefers-contrast: high) {
+  .admin-card {
+    border: 2px solid $text-primary;
+  }
+  
+  .MuiTextField-root,
+  .MuiFormControl-root {
+    .MuiOutlinedInput-notchedOutline {
+      border-width: 2px;
+    }
+  }
+}
