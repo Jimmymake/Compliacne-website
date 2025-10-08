@@ -8,6 +8,7 @@ import SignupForm from "./pages/SignUppage/Signup"
 import ForgotForm from "./pages/ForgotPassword/ForgotPassword"
 import UserDashboard from "./pages/Userdashboard/UserDashboard"
 import AdminDashboard from "./pages/Admindashboard/AdminDashboard"
+import LoginAnimations from "./components/LoginAnimations/LoginAnimations"
 import { logout } from "./utils/logout"
 // import Homepage from "./pages/Homepage/Homepage"
 
@@ -51,6 +52,7 @@ function App() {
       {/* Auth Routes */}
       <Route path="/" element={
         <div className="auth-page">
+          {/* <LoginAnimations /> */}
           <div className="auth-card">
             {/* brand/aside */}
             <aside className="auth-brand">
@@ -117,6 +119,13 @@ function App() {
 
       {/* Dashboard Routes */}
       <Route path="/AdminDashboard" element={
+        <ProtectedRoute requiredRole="admin">
+          <AdminDashboard />
+        </ProtectedRoute>
+      } />
+      
+      {/* Merchant Detail Route */}
+      <Route path="/AdminDashboard/merchant/:merchantId" element={
         <ProtectedRoute requiredRole="admin">
           <AdminDashboard />
         </ProtectedRoute>

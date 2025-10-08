@@ -4,6 +4,7 @@ import { Stepper, Step, StepLabel, Typography, Box, Link, Tooltip, IconButton, A
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import LogoutIcon from '@mui/icons-material/Logout';
 import { useLogout } from '../../utils/logout';
+import logo from '../../assets/logo.png';
 
 const Header = ({ currentStep, totalSteps, onMenuClick }) => {
   const fullname = localStorage.getItem("fullname");
@@ -87,12 +88,32 @@ const Header = ({ currentStep, totalSteps, onMenuClick }) => {
           <span></span>
           <span></span>
         </button>
-        <img style={{ height: '200px'}} src="src/assets/logo.png" alt="Compliance Web" />
-        <div className="logo">
+        {/* <img style={{ height: '200px'}} src="src/assets/logo.png" alt="Compliance Web" /> */}
+        {/* <div className="logo">
          <div style={{width: '100px', }}></div>
           <span>Compliance Website</span>
-        </div>
-      </div>
+        </div> */}
+               <div className="brand-logo">
+            <img 
+              src={logo} 
+              alt="MAMLAKA HUB Logo" 
+              style={{ 
+                width: '100px', 
+                height: '100px', 
+                objectFit: 'contain' 
+              }} 
+            />
+          </div>
+            <div className="brand-text">
+              <Typography variant="p" className="brand-title">
+                MAMLAKA HUB & SPOKE
+              </Typography>
+              {/* <Typography variant="caption" className="brand-subtitle">
+                SPOKE TRADE NETWORK
+              </Typography> */}
+            </div>
+          </div>
+      {/* </div> */}
 
       {/* <div className="header-center"> */}
         <Stepper activeStep={currentStep - 1} sx={{ 

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   Box,
   Chip,
@@ -28,11 +29,15 @@ import {
   CheckCircle as CompletedIcon,
   Pending as PendingIcon,
   Person as PersonIcon,
-  Business as BusinessIcon
+  Business as BusinessIcon,
+  Cancel as RejectedIcon
 } from '@mui/icons-material';
+
 import './UserDataGrid.scss';
+import './MerchantList.scss';
 
 const UserDataGridSimple = ({ selectedMerchant = null, onBackToAll = null }) => {
+  const navigate = useNavigate();
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [statistics, setStatistics] = useState({});
@@ -89,9 +94,13 @@ const UserDataGridSimple = ({ selectedMerchant = null, onBackToAll = null }) => 
     return Math.round((completed / total) * 100);
   };
 
-  const getStepStatus = (stepData) => {
+  const getStepStatus = (stepData, completionSummary, stepKey) => {
+    // Use completionSummary if available, otherwise fall back to stepData
+    if (completionSummary && stepKey) {
+      return completionSummary[stepKey] ? 'SUBMITTED' : 'Not Started';
+    }
     if (!stepData) return 'Not Started';
-    if (stepData.completed) return 'Completed';
+    if (stepData.completed) return 'SUBMITTED';
     return 'In Progress';
   };
 
@@ -135,6 +144,31 @@ const UserDataGridSimple = ({ selectedMerchant = null, onBackToAll = null }) => 
 
   const isSelected = (id) => selected.indexOf(id) !== -1;
 
+  // Handle viewing user details - navigate to merchant detail page
+  const handleViewDetails = (userData) => {
+    // Create a merchant object from user data to match the expected format
+    const merchantData = {
+      id: userData.user.merchantid,
+      name: userData.companyinformation?.companyName || userData.user.fullname,
+      email: userData.user.email,
+      status: userData.user.onboardingStatus,
+      progress: getCompletionPercentage(userData.completionSummary),
+      completedSteps: Object.values(userData.completionSummary).filter(Boolean).length,
+      totalSteps: 6,
+      submittedAt: userData.user.createdAt,
+      lastActivity: userData.user.updatedAt,
+      companyInfo: {
+        companyName: userData.companyinformation?.companyName || userData.user.fullname,
+        countryOfIncorporation: userData.companyinformation?.countryOfIncorporation || 'N/A',
+        dateOfIncorporation: userData.companyinformation?.dateOfIncorporation || userData.user.createdAt
+      },
+      fullUserData: userData
+    };
+    
+    // Navigate to merchant detail page
+    navigate(`/AdminDashboard/merchant/${userData.user.merchantid}`);
+  };
+
   // Filter users based on selected merchant
   const filteredUsers = selectedMerchant 
     ? users.filter(user => user.user.merchantid === selectedMerchant.id)
@@ -174,7 +208,7 @@ const UserDataGridSimple = ({ selectedMerchant = null, onBackToAll = null }) => 
     <Box className="user-data-grid">
       {/* Statistics Cards */}
       <Grid container spacing={3} sx={{ mb: 3 }}>
-        <Grid item xs={12} sm={6} md={3}>
+        <Grid item xs={12} sm={6} md={2.4}>
           <StatCard
             title="Total Users"
             value={statistics.totalUsers || 0}
@@ -182,7 +216,7 @@ const UserDataGridSimple = ({ selectedMerchant = null, onBackToAll = null }) => 
             icon={<PersonIcon />}
           />
         </Grid>
-        <Grid item xs={12} sm={6} md={3}>
+        <Grid item xs={12} sm={6} md={2.4}>
           <StatCard
             title="Pending Users"
             value={statistics.pendingUsers || 0}
@@ -190,7 +224,7 @@ const UserDataGridSimple = ({ selectedMerchant = null, onBackToAll = null }) => 
             icon={<PendingIcon />}
           />
         </Grid>
-        <Grid item xs={12} sm={6} md={3}>
+        <Grid item xs={12} sm={6} md={2.4}>
           <StatCard
             title="Approved Users"
             value={statistics.approvedUsers || 0}
@@ -198,9 +232,17 @@ const UserDataGridSimple = ({ selectedMerchant = null, onBackToAll = null }) => 
             icon={<CompletedIcon />}
           />
         </Grid>
-        <Grid item xs={12} sm={6} md={3}>
+        <Grid item xs={12} sm={6} md={2.4}>
           <StatCard
-            title="Total Admins"
+            title="Rejected Users"
+            value={statistics.rejectedUsers || 0}
+            color="error"
+            icon={<RejectedIcon />}
+          />
+        </Grid>
+        <Grid item xs={12} sm={6} md={2.4}>
+          <StatCard
+            title="Admins"
             value={statistics.totalAdmins || 0}
             color="info"
             icon={<BusinessIcon />}
@@ -239,8 +281,8 @@ const UserDataGridSimple = ({ selectedMerchant = null, onBackToAll = null }) => 
           </Box>
         </Box>
         
-        <TableContainer sx={{ maxHeight: 600 }}>
-          <Table stickyHeader>
+        <TableContainer sx={{ maxHeight: 600, overflowX: 'auto' }}>
+          <Table stickyHeader sx={{ minWidth: 1200 }}>
             <TableHead>
               <TableRow>
                 <TableCell padding="checkbox">
@@ -250,16 +292,21 @@ const UserDataGridSimple = ({ selectedMerchant = null, onBackToAll = null }) => 
                     onChange={handleSelectAllClick}
                   />
                 </TableCell>
-                <TableCell>User</TableCell>
-                <TableCell>Merchant ID</TableCell>
-                <TableCell>Role</TableCell>
-                <TableCell>Status</TableCell>
-                <TableCell>Progress</TableCell>
-                <TableCell>Company Info</TableCell>
-                <TableCell>UBO</TableCell>
-                <TableCell>KYC Docs</TableCell>
-                <TableCell>Created</TableCell>
-                <TableCell>Actions</TableCell>
+                <TableCell sx={{ minWidth: 200 }}>User</TableCell>
+                <TableCell sx={{ minWidth: 200 }}>Merchant ID</TableCell>
+                {/* <TableCell>Role</TableCell> */}
+                <TableCell sx={{ minWidth: 100 }}>Status</TableCell>
+                <TableCell sx={{ minWidth: 120 }}>Progress</TableCell>
+                {filteredUsers.some(user => user.user.role !== 'admin') ? (
+                  <>
+                    <TableCell sx={{ minWidth: 120 }}>Company Info</TableCell>
+                    <TableCell sx={{ minWidth: 100 }}>UBO</TableCell>
+                    <TableCell sx={{ minWidth: 130 }}>Risk Management</TableCell>
+                    <TableCell sx={{ minWidth: 120 }}>Payment Info</TableCell>
+                  </>
+                ) : null}
+                <TableCell sx={{ minWidth: 100 }}>Created</TableCell>
+                <TableCell sx={{ minWidth: 100 }}>Actions</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -316,14 +363,14 @@ const UserDataGridSimple = ({ selectedMerchant = null, onBackToAll = null }) => 
                           {userData.user.merchantid}
                         </Typography>
                       </TableCell>
-                      <TableCell>
+                      {/* <TableCell>
                         <Chip
                           label={userData.user.role}
                           color={userData.user.role === 'admin' ? 'primary' : 'default'}
                           size="small"
                           icon={userData.user.role === 'admin' ? <BusinessIcon /> : <PersonIcon />}
                         />
-                      </TableCell>
+                      </TableCell> */}
                       <TableCell>
                         <Chip
                           label={userData.user.onboardingStatus}
@@ -346,27 +393,38 @@ const UserDataGridSimple = ({ selectedMerchant = null, onBackToAll = null }) => 
                           </Box>
                         </Box>
                       </TableCell>
-                      <TableCell>
-                        <Chip
-                          label={getStepStatus(userData.companyinformation)}
-                          color={userData.companyinformation?.completed ? 'success' : 'default'}
-                          size="small"
-                        />
-                      </TableCell>
-                      <TableCell>
-                        <Chip
-                          label={getStepStatus(userData.ubo)}
-                          color={userData.ubo?.completed ? 'success' : 'default'}
-                          size="small"
-                        />
-                      </TableCell>
-                      <TableCell>
-                        <Chip
-                          label={getStepStatus(userData.kycdocs)}
-                          color={userData.kycdocs?.completed ? 'success' : 'default'}
-                          size="small"
-                        />
-                      </TableCell>
+                      {userData.user.role !== 'admin' ? (
+                        <>
+                          <TableCell>
+                            <Chip
+                              label={getStepStatus(userData.companyinformation, userData.completionSummary, 'companyinformation')}
+                              color={userData.completionSummary?.companyinformation ? 'success' : 'default'}
+                              size="small"
+                            />
+                          </TableCell>
+                          <TableCell>
+                            <Chip
+                              label={getStepStatus(userData.ubo, userData.completionSummary, 'ubo')}
+                              color={userData.completionSummary?.ubo ? 'success' : 'default'}
+                              size="small"
+                            />
+                          </TableCell>
+                          <TableCell>
+                            <Chip
+                              label={getStepStatus(userData.riskmanagement, userData.completionSummary, 'riskmanagement')}
+                              color={userData.completionSummary?.riskmanagement ? 'success' : 'default'}
+                              size="small"
+                            />
+                          </TableCell>
+                          <TableCell>
+                            <Chip
+                              label={getStepStatus(userData.paymentandprosessing, userData.completionSummary, 'paymentandprosessing')}
+                              color={userData.completionSummary?.paymentandprosessing ? 'success' : 'default'}
+                              size="small"
+                            />
+                          </TableCell>
+                        </>
+                      ) : null}
                       <TableCell>
                         <Typography variant="body2">
                           {new Date(userData.user.createdAt).toLocaleDateString()}
@@ -375,7 +433,14 @@ const UserDataGridSimple = ({ selectedMerchant = null, onBackToAll = null }) => 
                       <TableCell>
                         <Box sx={{ display: 'flex', gap: 0.5 }}>
                           <Tooltip title="View Details">
-                            <IconButton size="small" color="primary">
+                            <IconButton 
+                              size="small" 
+                              color="primary"
+                              onClick={(e) => {
+                                e.stopPropagation(); // Prevent row selection
+                                handleViewDetails(userData);
+                              }}
+                            >
                               <ViewIcon />
                             </IconButton>
                           </Tooltip>

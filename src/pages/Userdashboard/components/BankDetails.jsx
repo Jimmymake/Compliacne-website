@@ -185,7 +185,7 @@ const BankDetails = () => {
         if (response.ok) {
           const result = await response.json();
           console.log('Bank details submitted successfully:', result);
-          const successMessage = originalData ? "Bank details updated successfully!" : "Bank details submitted successfully!";
+          const successMessage = originalData ? "Bank details updated and submitted successfully!" : "Bank details submitted successfully!";
           setAlert({
             open: true,
             message: successMessage,
@@ -235,8 +235,18 @@ const BankDetails = () => {
         <h2>Bank Details {bankList.length > 1 ? bankList.findIndex(bank => bank.id === bankList[0].id) + 1 : 1}</h2>
         <p>Please provide your banking information</p>
         {isReadOnly && !isEditing && (
-          <div style={{ color: '#7ef9a3', fontSize: '0.9rem', marginTop: '0.5rem' }}>
-            ✓ Form completed - Click "Update" to make changes
+          <div style={{ 
+            color: '#4caf50', 
+            fontSize: '1rem', 
+            marginTop: '0.5rem',
+            fontWeight: 'bold',
+            backgroundColor: '#e8f5e8',
+            padding: '0.5rem 1rem',
+            borderRadius: '4px',
+            border: '1px solid #4caf50',
+            display: 'inline-block'
+          }}>
+            ✓ SUBMITTED - Form completed successfully
           </div>
         )}
       </div>
@@ -265,7 +275,7 @@ const BankDetails = () => {
                   id={`nameofbank-${bank.id}`}
                   value={bank.nameofbank}
                   onChange={(e) => handleInputChange(bank.id, 'nameofbank', e.target.value)}
-                  placeholder="Equity Bank"
+                  placeholder="Enter name of the Bank"
                   className={errors[`${bank.id}-nameofbank`] ? 'error' : ''}
                 />
                 {errors[`${bank.id}-nameofbank`] && <span className="error-message">{errors[`${bank.id}-nameofbank`]}</span>}
@@ -278,7 +288,7 @@ const BankDetails = () => {
                   id={`swiftcode-${bank.id}`}
                   value={bank.swiftcode}
                   onChange={(e) => handleInputChange(bank.id, 'swiftcode', e.target.value)}
-                  placeholder="EQBLKENAXXX"
+                  placeholder="Enter swiftcode"
                   className={errors[`${bank.id}-swiftcode`] ? 'error' : ''}
                 />
                 {errors[`${bank.id}-swiftcode`] && <span className="error-message">{errors[`${bank.id}-swiftcode`]}</span>}
@@ -291,7 +301,7 @@ const BankDetails = () => {
                   id={`jurisdiction-${bank.id}`}
                   value={bank.jurisdiction}
                   onChange={(e) => handleInputChange(bank.id, 'jurisdiction', e.target.value)}
-                  placeholder="Kenya"
+                  placeholder="Enter Jurisdiction"
                   className={errors[`${bank.id}-jurisdiction`] ? 'error' : ''}
                 />
                 {errors[`${bank.id}-jurisdiction`] && <span className="error-message">{errors[`${bank.id}-jurisdiction`]}</span>}
@@ -304,7 +314,7 @@ const BankDetails = () => {
                   id={`settlementcurrency-${bank.id}`}
                   value={bank.settlementcurrency}
                   onChange={(e) => handleInputChange(bank.id, 'settlementcurrency', e.target.value)}
-                  placeholder="KES"
+                  placeholder="Enter Settlement Currency"
                   className={errors[`${bank.id}-settlementcurrency`] ? 'error' : ''}
                 />
                 {errors[`${bank.id}-settlementcurrency`] && <span className="error-message">{errors[`${bank.id}-settlementcurrency`]}</span>}
@@ -345,11 +355,23 @@ const BankDetails = () => {
         autoHideDuration={6000}
         onClose={handleCloseAlert}
         anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+        sx={{
+          zIndex: 9999, // Ensure it appears above the header (header is typically z-index 1200)
+          '& .MuiSnackbar-root': {
+            zIndex: 9999
+          }
+        }}
       >
         <Alert 
           onClose={handleCloseAlert} 
           severity={alert.severity}
-          sx={{ width: '100%' }}
+          sx={{ 
+            width: '100%',
+            zIndex: 9999,
+            boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)',
+            backdropFilter: 'blur(10px)',
+            border: '1px solid rgba(255, 255, 255, 0.1)'
+          }}
         >
           {alert.message}
         </Alert>

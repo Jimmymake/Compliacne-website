@@ -9,7 +9,8 @@ const PaymentInfo = () => {
       KES: false,
       USD: false,
       GBP: false,
-      other: ''
+      other: false,
+      otherText: ''
     },
     exmonthlytransaction: {
       amountinusd: '',
@@ -19,7 +20,8 @@ const PaymentInfo = () => {
     paymentmethodtobesupported: {
       credit: false,
       mobilemoney: false,
-      other: ''
+      other: false,
+      otherText: ''
     },
     chargebackrefungrate: ''
   });
@@ -196,13 +198,16 @@ const PaymentInfo = () => {
     if (!chargebackRate.trim()) newErrors.chargebackrefungrate = 'Charge/Back refund rate is required';
     
     // Check if at least one currency is selected
-    const hasCurrency = Object.values(formData.requredcurrency).some(val => val === true) || 
-                       (formData.requredcurrency.other && formData.requredcurrency.other.trim() !== '');
+    const hasCurrency = formData.requredcurrency.KES || 
+                       formData.requredcurrency.USD || 
+                       formData.requredcurrency.GBP || 
+                       (formData.requredcurrency.other && formData.requredcurrency.otherText.trim() !== '');
     if (!hasCurrency) newErrors.requredcurrency = 'At least one currency must be selected';
     
     // Check if at least one payment method is selected
-    const hasPaymentMethod = Object.values(formData.paymentmethodtobesupported).some(val => val === true) || 
-                            (formData.paymentmethodtobesupported.other && formData.paymentmethodtobesupported.other.trim() !== '');
+    const hasPaymentMethod = formData.paymentmethodtobesupported.credit || 
+                            formData.paymentmethodtobesupported.mobilemoney || 
+                            (formData.paymentmethodtobesupported.other && formData.paymentmethodtobesupported.otherText.trim() !== '');
     if (!hasPaymentMethod) newErrors.paymentmethodtobesupported = 'At least one payment method must be selected';
     
     setErrors(newErrors);
@@ -221,7 +226,8 @@ const PaymentInfo = () => {
             KES: formData.requredcurrency.KES,
             USD: formData.requredcurrency.USD,
             GBP: formData.requredcurrency.GBP,
-            other: formData.requredcurrency.other
+            other: formData.requredcurrency.other,
+            otherText: formData.requredcurrency.otherText
           },
           exmonthlytransaction: {
             amountinusd: parseInt(formData.exmonthlytransaction.amountinusd),
@@ -231,7 +237,8 @@ const PaymentInfo = () => {
           paymentmethodtobesupported: {
             credit: formData.paymentmethodtobesupported.credit,
             mobilemoney: formData.paymentmethodtobesupported.mobilemoney,
-            other: formData.paymentmethodtobesupported.other
+            other: formData.paymentmethodtobesupported.other,
+            otherText: formData.paymentmethodtobesupported.otherText
           },
           chargebackrefungrate: formData.chargebackrefungrate
         };
@@ -300,8 +307,18 @@ const PaymentInfo = () => {
         <h2>Payment And Processing Information</h2>
         <p>Please provide your payment processing requirements</p>
         {isReadOnly && !isEditing && (
-          <div style={{ color: '#7ef9a3', fontSize: '0.9rem', marginTop: '0.5rem' }}>
-            ✓ Form completed - Click "Update" to make changes
+          <div style={{ 
+            color: '#4caf50', 
+            fontSize: '1rem', 
+            marginTop: '0.5rem',
+            fontWeight: 'bold',
+            backgroundColor: '#e8f5e8',
+            padding: '0.5rem 1rem',
+            borderRadius: '4px',
+            border: '1px solid #4caf50',
+            display: 'inline-block'
+          }}>
+            ✓ SUBMITTED - Payment information completed
           </div>
         )}
       </div>
@@ -337,16 +354,27 @@ const PaymentInfo = () => {
               <span className="checkmark"></span>
               GBP
             </label>
+              <label className="checkbox-label">
+              <input
+                type="checkbox"
+                checked={formData.requredcurrency.other}
+                onChange={(e) => handleCurrencyChange('other', e.target.checked)}
+              />
+              <span className="checkmark"></span>
+              other
+            </label>
           </div>
-          <div className="others-input">
-            <input
-              type="text"
-              name="requredcurrency.other"
-              value={formData.requredcurrency.other}
-              onChange={handleInputChange}
-              placeholder="EUR"
-            />
-          </div>
+          {formData.requredcurrency.other && (
+            <div className="others-input">
+              <input
+                type="text"
+                name="requredcurrency.otherText"
+                value={formData.requredcurrency.otherText}
+                onChange={handleInputChange}
+                placeholder="Enter other Currency"
+              />
+            </div>
+          )}
           {errors.requredcurrency && <span className="error-message">{errors.requredcurrency}</span>}
         </div>
 
@@ -361,7 +389,7 @@ const PaymentInfo = () => {
                 name="exmonthlytransaction.amountinusd"
                 value={formData.exmonthlytransaction.amountinusd}
                 onChange={handleInputChange}
-                placeholder="50000"
+                placeholder="Enter Amount In USD equivalent"
                 min="0"
                 step="0.01"
                 className={errors['exmonthlytransaction.amountinusd'] ? 'error' : ''}
@@ -377,7 +405,7 @@ const PaymentInfo = () => {
                 name="exmonthlytransaction.numberoftran"
                 value={formData.exmonthlytransaction.numberoftran}
                 onChange={handleInputChange}
-                placeholder="120"
+                placeholder="Enter Number of Transactions"
                 min="0"
                 className={errors['exmonthlytransaction.numberoftran'] ? 'error' : ''}
               />
@@ -392,7 +420,7 @@ const PaymentInfo = () => {
                 name="avgtranssize"
                 value={formData.avgtranssize}
                 onChange={handleInputChange}
-                placeholder="250"
+                placeholder="Enter Average Transaction Size"
                 min="0"
                 step="0.01"
                 className={errors.avgtranssize ? 'error' : ''}
@@ -423,31 +451,43 @@ const PaymentInfo = () => {
               <span className="checkmark"></span>
               Mobile Money
             </label>
+            <label className="checkbox-label">
+              <input
+                type="checkbox"
+                checked={formData.paymentmethodtobesupported.other}
+                onChange={(e) => handlePaymentMethodChange('other', e.target.checked)}
+              />
+              <span className="checkmark"></span>
+              other
+            </label>
           </div>
-          <div className="others-input">
-            <input
-              type="text"
-              name="paymentmethodtobesupported.other"
-              value={formData.paymentmethodtobesupported.other}
-              onChange={handleInputChange}
-              placeholder="Bank Transfer"
-            />
-          </div>
+          {formData.paymentmethodtobesupported.other && (
+            <div className="others-input">
+              <input
+                type="text"
+                name="paymentmethodtobesupported.otherText"
+                value={formData.paymentmethodtobesupported.otherText}
+                onChange={handleInputChange}
+                placeholder="Enter Other Payment Method"
+              />
+            </div>
+          )}
           {errors.paymentmethodtobesupported && <span className="error-message">{errors.paymentmethodtobesupported}</span>}
         </div>
 
         <div className="form-section">
           <div className="form-group">
             <label htmlFor="chargebackrefungrate">Charge/Back Refund Rate *</label>
+            <div className="others-input"> 
             <input
               type="text"
               id="chargebackrefungrate"
               name="chargebackrefungrate"
               value={formData.chargebackrefungrate}
               onChange={handleInputChange}
-              placeholder="2%"
+              placeholder="Enter Charge/Back Refund Rate"
               className={errors.chargebackrefungrate ? 'error' : ''}
-            />
+            />     </div>
             {errors.chargebackrefungrate && <span className="error-message">{errors.chargebackrefungrate}</span>}
           </div>
         </div>
@@ -477,11 +517,23 @@ const PaymentInfo = () => {
         autoHideDuration={6000}
         onClose={handleCloseAlert}
         anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+        sx={{
+          zIndex: 9999, // Ensure it appears above the header (header is typically z-index 1200)
+          '& .MuiSnackbar-root': {
+            zIndex: 9999
+          }
+        }}
       >
         <Alert 
           onClose={handleCloseAlert} 
           severity={alert.severity}
-          sx={{ width: '100%' }}
+          sx={{ 
+            width: '100%',
+            zIndex: 9999,
+            boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)',
+            backdropFilter: 'blur(10px)',
+            border: '1px solid rgba(255, 255, 255, 0.1)'
+          }}
         >
           {alert.message}
         </Alert>

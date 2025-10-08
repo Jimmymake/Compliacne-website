@@ -1,11 +1,11 @@
 import React from 'react';
-import { 
-  Drawer, 
-  List, 
-  ListItem, 
-  ListItemButton, 
-  ListItemIcon, 
-  ListItemText, 
+import {
+  Drawer,
+  List,
+  ListItem,
+  ListItemButton,
+  ListItemIcon,
+  ListItemText,
   Divider,
   Typography,
   Box,
@@ -32,27 +32,27 @@ const AdminSidebar = ({ isOpen, onClose, activeView, onViewChange, unreadNotific
   const handleLogout = useLogout();
 
   const menuItems = [
-    {
-      id: 'overview',
-      title: 'Dashboard Overview',
-      icon: <Dashboard />,
-      path: '/admin/overview',
-      badge: null
-    },
+    // {
+    //   id: 'overview',
+    //   title: 'Dashboard Overview',
+    //   icon: <Dashboard />,
+    //   path: '/admin/overview',
+    //   badge: null
+    // },
     {
       id: 'merchants',
-      title: 'Merchant Management',
+      title: 'User Management',
       icon: <People />,
       path: '/admin/merchants',
       badge: null
     },
-    {
-      id: 'user-management',
-      title: 'User Management',
-      icon: <PersonAdd />,
-      path: '/admin/users',
-      badge: null
-    },
+    // {
+    //   id: 'user-management',
+    //   title: 'User Management',
+    //   icon: <PersonAdd />,
+    //   path: '/admin/users',
+    //   badge: null
+    // },
     {
       id: 'notifications',
       title: 'Notifications',
@@ -134,7 +134,7 @@ const AdminSidebar = ({ isOpen, onClose, activeView, onViewChange, unreadNotific
             item.icon
           )}
         </ListItemIcon>
-        <ListItemText 
+        <ListItemText
           primary={item.title}
           className="sidebar-text"
         />
@@ -158,17 +158,17 @@ const AdminSidebar = ({ isOpen, onClose, activeView, onViewChange, unreadNotific
 
   // Determine if we're on desktop (persistent) or mobile (temporary)
   const isDesktop = window.innerWidth >= 1024;
-  
+
   return (
     <>
       {/* Mobile Overlay - only show on mobile */}
       {isOpen && !isDesktop && (
-        <div 
-          className="sidebar-overlay" 
+        <div
+          className="sidebar-overlay"
           onClick={onClose}
         />
       )}
-      
+
       <Drawer
         variant={isDesktop ? "persistent" : "temporary"}
         open={isOpen}
@@ -195,10 +195,10 @@ const AdminSidebar = ({ isOpen, onClose, activeView, onViewChange, unreadNotific
               </div>
             </div>
             <div className="header-stats">
-              <Chip 
-                label="Live" 
-                color="success" 
-                size="small" 
+              <Chip
+                label="Live"
+                color="success"
+                size="small"
                 className="status-chip"
               />
             </div>
@@ -209,20 +209,20 @@ const AdminSidebar = ({ isOpen, onClose, activeView, onViewChange, unreadNotific
           {/* Main Navigation */}
           <Box className="sidebar-content">
             {renderMenuSection(menuItems, 'Main')}
-            
+
             <Divider className="section-divider" />
-            
+
             {renderMenuSection(analyticsItems, 'Analytics')}
-            
+
             <Divider className="section-divider" />
-            
+
             {renderMenuSection(systemItems, 'System')}
           </Box>
 
           {/* Sidebar Footer */}
           <Box className="sidebar-footer">
             <Divider className="footer-divider" />
-            
+
             <div className="footer-stats">
               <div className="stat-item">
                 <Typography variant="caption" className="stat-label">
@@ -236,7 +236,7 @@ const AdminSidebar = ({ isOpen, onClose, activeView, onViewChange, unreadNotific
                 </div>
               </div>
             </div>
-            
+
             <ListItem disablePadding className="logout-item">
               <ListItemButton
                 onClick={handleLogoutClick}
@@ -245,7 +245,7 @@ const AdminSidebar = ({ isOpen, onClose, activeView, onViewChange, unreadNotific
                 <ListItemIcon className="logout-icon">
                   <Logout />
                 </ListItemIcon>
-                <ListItemText 
+                <ListItemText
                   primary="Logout"
                   className="logout-text"
                 />

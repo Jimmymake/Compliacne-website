@@ -7,7 +7,17 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "docker:build": "docker build -t compliance-web .",
+    "docker:build:dev": "docker build --target development -t compliance-web:dev .",
+    "docker:build:prod": "docker build --target production -t compliance-web:prod .",
+    "docker:run:dev": "docker run -p 5173:5173 -v $(pwd):/app -v /app/node_modules compliance-web:dev",
+    "docker:run:prod": "docker run -p 80:80 compliance-web:prod",
+    "docker:compose:dev": "docker-compose -f docker-compose.dev.yml up",
+    "docker:compose:prod": "docker-compose --profile prod up",
+    "docker:compose:build": "docker-compose build",
+    "docker:compose:down": "docker-compose down",
+    "docker:clean": "docker system prune -f && docker image prune -f"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",

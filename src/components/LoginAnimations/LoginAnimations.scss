@@ -1,0 +1,334 @@
+@use '../../styles/variables' as *;
+
+// Animated background
+.animated-bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  background: linear-gradient(-45deg, #0f172a, #0b1220, #1e293b, #334155);
+  background-size: 400% 400%;
+  animation: gradientShift 15s ease infinite;
+}
+
+@keyframes gradientShift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+// Floating shapes
+.floating-shapes {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.shape {
+  position: absolute;
+  border-radius: 50%;
+  background: linear-gradient(45deg, rgba(91, 141, 239, 0.1), rgba(126, 249, 163, 0.1));
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.shape-1 {
+  width: 80px;
+  height: 80px;
+  top: 20%;
+  left: 10%;
+  animation: float1 20s ease-in-out infinite;
+}
+
+.shape-2 {
+  width: 120px;
+  height: 120px;
+  top: 60%;
+  right: 15%;
+  animation: float2 25s ease-in-out infinite;
+}
+
+.shape-3 {
+  width: 60px;
+  height: 60px;
+  top: 80%;
+  left: 20%;
+  animation: float3 18s ease-in-out infinite;
+}
+
+.shape-4 {
+  width: 100px;
+  height: 100px;
+  top: 10%;
+  right: 30%;
+  animation: float4 22s ease-in-out infinite;
+}
+
+.shape-5 {
+  width: 140px;
+  height: 140px;
+  top: 40%;
+  left: 5%;
+  animation: float5 30s ease-in-out infinite;
+}
+
+@keyframes float1 {
+  0%, 100% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+  25% {
+    transform: translate(30px, -20px) rotate(90deg);
+  }
+  50% {
+    transform: translate(-20px, 30px) rotate(180deg);
+  }
+  75% {
+    transform: translate(20px, 10px) rotate(270deg);
+  }
+}
+
+@keyframes float2 {
+  0%, 100% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+  33% {
+    transform: translate(-40px, 20px) rotate(120deg);
+  }
+  66% {
+    transform: translate(20px, -30px) rotate(240deg);
+  }
+}
+
+@keyframes float3 {
+  0%, 100% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+  50% {
+    transform: translate(25px, -15px) rotate(180deg);
+  }
+}
+
+@keyframes float4 {
+  0%, 100% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+  25% {
+    transform: translate(-30px, 25px) rotate(90deg);
+  }
+  50% {
+    transform: translate(35px, -20px) rotate(180deg);
+  }
+  75% {
+    transform: translate(-25px, -30px) rotate(270deg);
+  }
+}
+
+@keyframes float5 {
+  0%, 100% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+  20% {
+    transform: translate(50px, -30px) rotate(72deg);
+  }
+  40% {
+    transform: translate(-30px, 40px) rotate(144deg);
+  }
+  60% {
+    transform: translate(40px, 20px) rotate(216deg);
+  }
+  80% {
+    transform: translate(-20px, -40px) rotate(288deg);
+  }
+}
+
+// Particles canvas
+.particles-canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  pointer-events: none;
+}
+
+// 3D Card Effects
+.auth-card {
+  position: relative;
+  z-index: 10;
+  transform-style: preserve-3d;
+  transition: transform 0.3s ease;
+  
+  &:hover {
+    transform: rotateX(5deg) rotateY(5deg) translateZ(20px);
+  }
+}
+
+// Enhanced form card with 3D effects
+.form-card {
+  transform-style: preserve-3d;
+  transition: all 0.3s ease;
+  position: relative;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(45deg, rgba(91, 141, 239, 0.1), rgba(126, 249, 163, 0.1));
+    border-radius: 10px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    z-index: -1;
+  }
+  
+  &:hover::before {
+    opacity: 1;
+  }
+  
+  &:hover {
+    transform: translateY(-5px) translateZ(10px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+  }
+}
+
+// Input field 3D effects
+.field input {
+  transform-style: preserve-3d;
+  transition: all 0.3s ease;
+  
+  &:focus {
+    transform: translateZ(5px);
+    box-shadow: 0 0 0 4px rgba(91, 141, 239, 0.08), 0 10px 20px rgba(0, 0, 0, 0.1);
+  }
+}
+
+// Button 3D effects
+.btn {
+  transform-style: preserve-3d;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s ease;
+  }
+  
+  &:hover {
+    transform: translateY(-2px) translateZ(5px);
+    box-shadow: 0 10px 20px rgba(91, 141, 239, 0.3);
+    
+    &::before {
+      left: 100%;
+    }
+  }
+  
+  &:active {
+    transform: translateY(0) translateZ(2px);
+  }
+}
+
+// Logo 3D effects
+.brand-inner img {
+  transform-style: preserve-3d;
+  transition: all 0.3s ease;
+  
+  &:hover {
+    transform: rotateY(15deg) rotateX(5deg) scale(1.1);
+  }
+}
+
+// Hero illustration 3D effects
+.hero-illustration .circle {
+  transform-style: preserve-3d;
+  animation: rotate3D 20s linear infinite;
+  position: relative;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(45deg, rgba(91, 141, 239, 0.3), rgba(126, 249, 163, 0.3));
+    border-radius: 50%;
+    transform: translate(-50%, -50%) translateZ(20px);
+    animation: pulse3D 3s ease-in-out infinite;
+  }
+}
+
+@keyframes rotate3D {
+  0% {
+    transform: rotateX(0deg) rotateY(0deg) rotateZ(0deg);
+  }
+  100% {
+    transform: rotateX(360deg) rotateY(360deg) rotateZ(360deg);
+  }
+}
+
+@keyframes pulse3D {
+  0%, 100% {
+    transform: translate(-50%, -50%) translateZ(20px) scale(1);
+    opacity: 0.7;
+  }
+  50% {
+    transform: translate(-50%, -50%) translateZ(30px) scale(1.2);
+    opacity: 1;
+  }
+}
+
+// Responsive adjustments
+@media (max-width: 768px) {
+  .shape {
+    display: none; // Hide floating shapes on mobile for performance
+  }
+  
+  .auth-card:hover {
+    transform: none; // Disable 3D effects on mobile
+  }
+  
+  .form-card:hover {
+    transform: translateY(-2px); // Simplified mobile hover
+  }
+}
+
+// Performance optimizations
+@media (prefers-reduced-motion: reduce) {
+  .animated-bg,
+  .shape,
+  .hero-illustration .circle,
+  .hero-illustration .circle::before {
+    animation: none;
+  }
+  
+  .auth-card,
+  .form-card,
+  .field input,
+  .btn,
+  .brand-inner img {
+    transition: none;
+  }
+}

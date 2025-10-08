@@ -1,0 +1,63 @@
+version: '3.8'
+
+services:
+  # Development service
+  app-dev:
+    build:
+      context: .
+      target: development
+    ports:
+      - "5173:5173"
+    volumes:
+      - .:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+      - VITE_API_URL=http://localhost:4000
+    profiles:
+      - dev
+    networks:
+      - compliance-network
+
+  # Production service
+  app-prod:
+    build:
+      context: .
+      target: production
+    ports:
+      - "80:80"
+    environment:
+      - NODE_ENV=production
+    profiles:
+      - prod
+    networks:
+      - compliance-network
+    depends_on:
+      - backend
+
+  # Backend service (placeholder - adjust according to your backend)
+  backend:
+    image: node:18-alpine
+    working_dir: /app
+    command: sh -c "echo 'Backend service placeholder - replace with your actual backend configuration'"
+    ports:
+      - "4000:4000"
+    environment:
+      - NODE_ENV=production
+      - PORT=4000
+    profiles:
+      - prod
+    networks:
+      - compliance-network
+    # volumes:
+    #   - ./backend:/app
+    # command: npm start
+
+networks:
+  compliance-network:
+    driver: bridge
+
+volumes:
+  node_modules:
+
+

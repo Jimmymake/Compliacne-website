@@ -8,8 +8,8 @@
   width: 100%;
   height: 100%;
   background: rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(4px);
-  z-index: 998;
+  backdrop-filter: none; // Removed blur to fix mobile view
+  z-index: 1299; // Just below sidebar
   opacity: 0;
   visibility: hidden;
   transition: all $transition-normal;
@@ -28,14 +28,14 @@
 // Main Sidebar
 .sidebar {
   position: fixed;
-  top: 0;
+  top: 70px; // Account for header height
   left: 0;
   width: 320px;
-  height: 100vh;
+  height: calc(100vh - 70px); // Subtract header height
   background: $sidebar-bg;
-  backdrop-filter: blur(20px);
+  backdrop-filter: none; // Removed blur completely for better performance
   border-right: 1px solid $border-color;
-  z-index: 999;
+  z-index: 1300; // Higher than header to ensure visibility
   transform: translateX(-100%);
   transition: transform $transition-normal;
   display: flex;
@@ -49,14 +49,15 @@
   // Desktop: Always visible and sticky
   @media (min-width: 1024px) {
     position: sticky;
-    top: 0;
+    top: 70px; // Account for header height on desktop
+    height: calc(100vh - 70px); // Subtract header height
     transform: translateX(0);
     z-index: 100;
   }
   
   // Sidebar Header
   .sidebar-header {
-    padding: $spacing-xl;
+    padding: $spacing-md; // Reduced padding for more compact sidebar header
     border-bottom: 1px solid $border-color;
     display: flex;
     justify-content: space-between;
@@ -398,9 +399,12 @@
 @media (max-width: 768px) {
   .sidebar {
     width: 280px;
+    top: 60px; // Account for smaller header height on mobile
+    height: calc(100vh - 60px); // Subtract smaller header height
+    backdrop-filter: none; // Remove blur on mobile for better performance
     
     .sidebar-header {
-      padding: $spacing-lg;
+      padding: $spacing-sm; // Reduced mobile sidebar header padding
       
       h3 {
         font-size: 1.1rem;
@@ -426,6 +430,9 @@
   .sidebar {
     width: 100%;
     max-width: 320px;
+    top: 60px; // Account for header height on small mobile
+    height: calc(100vh - 60px); // Subtract header height
+    backdrop-filter: none; // Remove blur on small mobile devices
   }
 }
 

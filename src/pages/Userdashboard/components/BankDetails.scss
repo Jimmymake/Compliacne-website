@@ -7,6 +7,39 @@ $muted: #97a0b4;
 $card: rgba(255, 255, 255, 0.04);
 $error: #ff6b6b;
 
+// Snackbar styling to appear above header
+.MuiSnackbar-root {
+  z-index: 9999 !important;
+  
+  .MuiAlert-root {
+    z-index: 9999 !important;
+    position: relative;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    
+    &.MuiAlert-standardSuccess {
+      background: rgba(34, 197, 94, 0.9);
+      color: white;
+    }
+    
+    &.MuiAlert-standardError {
+      background: rgba(239, 68, 68, 0.9);
+      color: white;
+    }
+    
+    &.MuiAlert-standardWarning {
+      background: rgba(245, 158, 11, 0.9);
+      color: white;
+    }
+    
+    &.MuiAlert-standardInfo {
+      background: rgba(59, 130, 246, 0.9);
+      color: white;
+    }
+  }
+}
+
 .bank-details-form {
   .form-header {
     text-align: center;

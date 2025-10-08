@@ -92,26 +92,27 @@ const Sidebar = ({ isOpen, onClose, currentStep }) => {
     <>
       {isOpen && <div className={`sidebar-overlay ${isOpen ? 'show' : ''}`} onClick={onClose}></div>}
       <aside className={`sidebar ${isOpen ? 'open' : ''} desktop-sticky`}>
-        <div className="sidebar-header">
-          <div className="header-content">
-            <div className="brand-logo">
+        <div className="">
+          <div className="">
+               {/* <img style={{padding: '0', height: '120px', width: '120px'}} src="src/assets/gypsum.png" alt="Compliance Web" /> */}
+            {/* <div className="brand-logo">
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <path d="M12 2L2 7l10 5 10-5-10-5z"/>
                 <path d="M2 17l10 5 10-5"/>
                 <path d="M2 12l10 5 10-5"/>
               </svg>
-            </div>
-            <div className="brand-text">
+            </div> */}
+            {/* <div className="brand-text">
               <h3>MAMLAKA HUB</h3>
               <p>SPOKE TRADE NETWORK</p>
-            </div>
+            </div> */}
           </div>
-          <button className="close-btn" onClick={onClose}>
+          {/* <button className="close-btn" onClick={onClose}>
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <line x1="18" y1="6" x2="6" y2="18"></line>
               <line x1="6" y1="6" x2="18" y2="18"></line>
             </svg>
-          </button>
+          </button> */}
         </div>
 
         <nav className="sidebar-nav">

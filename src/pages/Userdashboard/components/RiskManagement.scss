@@ -110,6 +110,127 @@ $error: #ff6b6b;
     }
   }
   
+  .others-input {
+    margin-top: 1rem;
+    
+    input {
+      width: 100%;
+      padding: 0.75rem;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.05);
+      color: $text;
+      font-size: 0.9rem;
+      transition: all 0.3s ease;
+      
+      &:focus {
+        outline: none;
+        border-color: $primary;
+        box-shadow: 0 0 0 3px rgba(91, 141, 239, 0.1);
+      }
+      
+      &::placeholder {
+        color: $muted;
+      }
+    }
+  }
+  
+  .file-upload-container {
+    margin-top: 1rem;
+    
+    .file-upload-label {
+      display: inline-block;
+      padding: 0.75rem 1.5rem;
+      background: rgba(255, 255, 255, 0.05);
+      border: 2px dashed rgba(255, 255, 255, 0.2);
+      border-radius: 8px;
+      color: $text;
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: all 0.3s ease;
+      text-align: center;
+      width: 100%;
+      
+      &:hover {
+        background: rgba(255, 255, 255, 0.08);
+        border-color: $primary;
+        color: $primary;
+      }
+      
+      &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+    }
+    
+    .uploaded-file-info {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 1rem;
+      padding: 0.75rem;
+      background: rgba(76, 175, 80, 0.1);
+      border: 1px solid rgba(76, 175, 80, 0.3);
+      border-radius: 8px;
+      
+      .file-info-content {
+        display: flex;
+        align-items: center;
+        flex: 1;
+        min-width: 0; // Allow text to wrap/truncate
+        
+        .file-name {
+          color: #4caf50;
+          font-size: 0.9rem;
+          font-weight: 500;
+          margin-right: 0.5rem;
+          flex-shrink: 0;
+        }
+        
+        .file-url {
+          color: #4caf50;
+          font-size: 0.9rem;
+          text-decoration: underline;
+          text-decoration-color: rgba(76, 175, 80, 0.5);
+          word-break: break-all;
+          transition: all 0.3s ease;
+          
+          &:hover {
+            color: #66bb6a;
+            text-decoration-color: #66bb6a;
+          }
+          
+          &:visited {
+            color: #4caf50;
+          }
+        }
+      }
+      
+      .remove-file-btn {
+        background: transparent;
+        border: 1px solid rgba(255, 107, 107, 0.3);
+        color: $error;
+        padding: 0.25rem 0.75rem;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 0.8rem;
+        transition: all 0.3s ease;
+        flex-shrink: 0;
+        margin-left: 1rem;
+        
+        &:hover {
+          background: rgba(255, 107, 107, 0.1);
+          border-color: $error;
+        }
+        
+        &:disabled {
+          opacity: 0.5;
+          cursor: not-allowed;
+        }
+      }
+    }
+  }
+  
   .radio-group {
     display: flex;
     gap: 1rem;

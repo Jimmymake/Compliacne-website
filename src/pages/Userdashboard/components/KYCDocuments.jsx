@@ -14,7 +14,8 @@ const KYCDocuments = () => {
     shareholderpassportid: null,
     websiteipadress: '',
     proofofbomain: null,
-    proofofadress: null
+    proofofadress: null,
+    pepform: null
   });
 
   const [originalData, setOriginalData] = useState(null);
@@ -23,7 +24,8 @@ const KYCDocuments = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [errors, setErrors] = useState({});
   const [uploading, setUploading] = useState(false);
-  
+  const [selectedFiles, setSelectedFiles] = useState({});
+
   const [alert, setAlert] = useState({
     open: false,
     message: "",
@@ -100,8 +102,8 @@ const KYCDocuments = () => {
   // Helper function to get input props for read-only state
   const getInputProps = (fieldName) => ({
     readOnly: isReadOnly && !isEditing,
-    style: isReadOnly && !isEditing ? { 
-      backgroundColor: '#f5f5f5', 
+    style: isReadOnly && !isEditing ? {
+      backgroundColor: '#f5f5f5',
       cursor: 'not-allowed',
       color: '#666'
     } : {}
@@ -167,12 +169,22 @@ const KYCDocuments = () => {
       label: 'Proof of Address*',
       required: true,
       type: 'file'
+    },
+    {
+      key: 'pepform',
+      label: 'PEP Form*',
+      required: true,
+      type: 'file'
     }
   ];
 
-  const uploadFileToImageService = async (file) => {
+  // Upload file to API (same format as Digital Signature)
+  const uploadFileToImageService = async (file, retryCount = 0) => {
     const formData = new FormData();
-    formData.append("file", file, file.name);
+    // Use the actual file name instead of hardcoded name to preserve file extension
+    // Ensure the file has a proper name with extension
+    const fileName = file.name || `document.${file.type.split('/')[1] || 'pdf'}`;
+    formData.append("file", file, fileName);
 
     const requestOptions = {
       method: "POST",
@@ -181,29 +193,137 @@ const KYCDocuments = () => {
     };
 
     try {
-      const response = await fetch("https://images.cradlevoices.com/", requestOptions);
-      const result = await response.json();
+      console.log(`Uploading file: ${fileName} (attempt ${retryCount + 1})`);
       
-      if (result.status === "success") {
-        return result.file.url;
-      } else {
-        throw new Error(result.message || "Upload failed");
+      const response = await fetch("https://images.cradlevoices.com/", requestOptions);
+      
+      if (!response.ok) {
+        const errorMessage = `Server error: ${response.status} ${response.statusText}`;
+        console.error('Upload failed:', errorMessage);
+        throw new Error(errorMessage);
+      }
+      
+      const result = await response.text();
+      console.log('Upload response:', result);
+      
+      // Parse the response to check for errors
+      try {
+        const parsedResult = JSON.parse(result);
+        
+        // Check for various error formats
+        if (parsedResult.status === 'error') {
+          const errorMsg = parsedResult.message || 'Upload failed';
+          console.error('Server returned error:', errorMsg);
+          throw new Error(errorMsg);
+        }
+        
+        // Check for success indicators
+        if (parsedResult.status === 'success' || parsedResult.url || parsedResult.fileUrl) {
+          return result;
+        }
+        
+        // If no clear status, assume success if we got a response
+        return result;
+        
+      } catch (parseError) {
+        // If response is not JSON, check if it looks like an error
+        if (result.toLowerCase().includes('error') || result.toLowerCase().includes('failed')) {
+          throw new Error(`Upload failed: ${result}`);
+        }
+        // If it's not JSON and doesn't contain error keywords, assume success
+        return result;
       }
     } catch (error) {
-      console.error("File upload error:", error);
-      throw error;
+      console.error('Upload error:', error);
+      
+      // Retry logic for network errors (up to 2 retries)
+      if (retryCount < 2 && (
+        error.message.includes('NetworkError') || 
+        error.message.includes('Failed to fetch') ||
+        error.message.includes('timeout')
+      )) {
+        console.log(`Retrying upload (attempt ${retryCount + 2})...`);
+        await new Promise(resolve => setTimeout(resolve, 1000 * (retryCount + 1))); // Exponential backoff
+        return uploadFileToImageService(file, retryCount + 1);
+      }
+      
+      // Enhanced error messages based on error type
+      let userFriendlyMessage = 'Upload failed. Please try again.';
+      
+      if (error.message.includes('File type')) {
+        userFriendlyMessage = 'Invalid file type. Please upload a PDF, image, or document file.';
+      } else if (error.message.includes('size') || error.message.includes('too large')) {
+        userFriendlyMessage = 'File is too large. Please upload a file smaller than 10MB.';
+      } else if (error.message.includes('NetworkError') || error.message.includes('Failed to fetch')) {
+        userFriendlyMessage = 'Network error. Please check your internet connection and try again.';
+      } else if (error.message.includes('Server error: 413')) {
+        userFriendlyMessage = 'File is too large for the server. Please upload a smaller file.';
+      } else if (error.message.includes('Server error: 415')) {
+        userFriendlyMessage = 'File type not supported. Please upload a different file format.';
+      } else if (error.message.includes('Server error: 500')) {
+        userFriendlyMessage = 'Server error. Please try again in a few moments.';
+      } else if (error.message.includes('Server error: 400')) {
+        userFriendlyMessage = 'Invalid file. Please check the file and try again.';
+      }
+      
+      throw new Error(userFriendlyMessage);
     }
   };
 
-  const handleFileChange = (documentKey, file) => {
+  const handleFileSelect = (documentKey, file) => {
     if (isReadOnly && !isEditing) return; // Prevent changes in read-only mode
+
+    if (!file) return;
+
+    // Validate file name and extension
+    const fileName = file.name.toLowerCase();
+    const allowedExtensions = ['.pdf', '.jpg', '.jpeg', '.png', '.gif', '.doc', '.docx'];
+    const hasValidExtension = allowedExtensions.some(ext => fileName.endsWith(ext));
     
-    setDocuments(prev => ({
+    if (!hasValidExtension) {
+      setAlert({
+        open: true,
+        message: "Please upload a valid file with extension: PDF, JPG, JPEG, PNG, GIF, DOC, or DOCX",
+        severity: "error"
+      });
+      return;
+    }
+
+    // Validate file type (MIME type)
+    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+    if (!allowedTypes.includes(file.type)) {
+      setAlert({
+        open: true,
+        message: "Please upload a valid file (JPEG, PNG, PDF, or DOC)",
+        severity: "error"
+      });
+      return;
+    }
+
+    // Validate file size (max 10MB)
+    const maxSize = 10 * 1024 * 1024; // 10MB
+    if (file.size > maxSize) {
+      setAlert({
+        open: true,
+        message: "File size must be less than 10MB",
+        severity: "error"
+      });
+      return;
+    }
+
+    // Store the file for later upload
+    setSelectedFiles(prev => ({
       ...prev,
       [documentKey]: file
     }));
-    
-    // Clear error when user uploads a file
+
+    setAlert({
+      open: true,
+      message: "File selected successfully! Click 'Submit' to upload.",
+      severity: "success"
+    });
+
+    // Clear error when user selects a file
     if (errors[documentKey]) {
       setErrors(prev => ({
         ...prev,
@@ -214,12 +334,12 @@ const KYCDocuments = () => {
 
   const handleTextChange = (documentKey, value) => {
     if (isReadOnly && !isEditing) return; // Prevent changes in read-only mode
-    
+
     setDocuments(prev => ({
       ...prev,
       [documentKey]: value
     }));
-    
+
     // Clear error when user types
     if (errors[documentKey]) {
       setErrors(prev => ({
@@ -231,13 +351,17 @@ const KYCDocuments = () => {
 
   const validateForm = () => {
     const newErrors = {};
-    
+
     documentList.forEach(doc => {
-      if (doc.required && !documents[doc.key]) {
-        newErrors[doc.key] = `${doc.label} is required`;
+      if (doc.required) {
+        // Check if file is already uploaded or newly selected
+        const hasFile = documents[doc.key] || selectedFiles[doc.key];
+        if (!hasFile) {
+          newErrors[doc.key] = `${doc.label} is required`;
+        }
       }
     });
-    
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -246,25 +370,42 @@ const KYCDocuments = () => {
     e.preventDefault();
     if (validateForm()) {
       setUploading(true);
-      
+
       try {
-        // Upload all files to image service first
+        // Upload all selected files to image service first
         const uploadedFiles = {};
-        
+
         for (const doc of documentList) {
-          if (doc.type === 'file' && documents[doc.key]) {
-            try {
-              const fileUrl = await uploadFileToImageService(documents[doc.key]);
-              uploadedFiles[doc.key] = fileUrl;
-            } catch (error) {
-              console.error(`Failed to upload ${doc.key}:`, error);
-              setAlert({
-                open: true,
-                message: `Failed to upload ${doc.label}. Please try again.`,
-                severity: "error"
-              });
-              setUploading(false);
-              return;
+          if (doc.type === 'file') {
+            // Check if there's a newly selected file to upload
+            if (selectedFiles[doc.key]) {
+              try {
+                const fileResponse = await uploadFileToImageService(selectedFiles[doc.key]);
+                
+                // Check if the response contains an error
+                try {
+                  const parsedResponse = JSON.parse(fileResponse);
+                  if (parsedResponse.status === 'error') {
+                    throw new Error(parsedResponse.message || 'File upload failed');
+                  }
+                } catch (parseError) {
+                  // If it's not JSON, assume it's a successful response
+                }
+                
+                uploadedFiles[doc.key] = fileResponse;
+              } catch (error) {
+                console.error(`Failed to upload ${doc.key}:`, error);
+                setAlert({
+                  open: true,
+                  message: `Failed to upload ${doc.label}: ${error.message}. Please check the file type and try again.`,
+                  severity: "error"
+                });
+                setUploading(false);
+                return;
+              }
+            } else if (documents[doc.key]) {
+              // Use already uploaded file
+              uploadedFiles[doc.key] = documents[doc.key];
             }
           } else if (doc.type === 'text') {
             uploadedFiles[doc.key] = documents[doc.key];
@@ -286,7 +427,8 @@ const KYCDocuments = () => {
             ? uploadedFiles.websiteipadress 
             : uploadedFiles.websiteipadress.split(',').map(url => url.trim()).filter(url => url),
           proofofbomain: uploadedFiles.proofofbomain || '',
-          proofofadress: uploadedFiles.proofofadress || ''
+          proofofadress: uploadedFiles.proofofadress || '',
+          pepform: uploadedFiles.pepform || ''
         };
 
         // Submit to KYC API - Use PUT for updates, POST for new submissions
@@ -309,9 +451,19 @@ const KYCDocuments = () => {
             message: successMessage,
             severity: "success"
           });
-          
+
+          // Update documents with uploaded file responses
+          const updatedDocuments = { ...documents };
+          Object.keys(selectedFiles).forEach(key => {
+            if (uploadedFiles[key]) {
+              updatedDocuments[key] = uploadedFiles[key];
+            }
+          });
+
           // Update original data and set to read-only after successful save
-          setOriginalData(documents);
+          setOriginalData(updatedDocuments);
+          setDocuments(updatedDocuments);
+          setSelectedFiles({}); // Clear selected files
           setIsReadOnly(true);
           setIsEditing(false);
         } else {
@@ -355,8 +507,18 @@ const KYCDocuments = () => {
         <h2>Document Requirements Checklist</h2>
         <p>Please upload all required documents for verification</p>
         {isReadOnly && !isEditing && (
-          <div style={{ color: '#7ef9a3', fontSize: '0.9rem', marginTop: '0.5rem' }}>
-            ✓ Form completed - Click "Update" to make changes
+          <div style={{
+            color: '#4caf50',
+            fontSize: '1rem',
+            marginTop: '0.5rem',
+            fontWeight: 'bold',
+            backgroundColor: '#e8f5e8',
+            padding: '0.5rem 1rem',
+            borderRadius: '4px',
+            border: '1px solid #4caf50',
+            display: 'inline-block'
+          }}>
+            ✓ SUBMITTED - Documents uploaded successfully
           </div>
         )}
       </div>
@@ -368,29 +530,83 @@ const KYCDocuments = () => {
               <div className="document-label">
                 <span className="document-number">{index + 1}.</span>
                 <label htmlFor={doc.key}>{doc.label}</label>
+                {documents[doc.key] && (
+                  <div style={{
+                    color: '#4caf50',
+                    fontSize: '0.8rem',
+                    fontWeight: 'bold',
+                    backgroundColor: '#e8f5e8',
+                    padding: '0.2rem 0.5rem',
+                    borderRadius: '4px',
+                    border: '1px solid #4caf50',
+                    display: 'inline-block',
+                    marginLeft: '0.5rem'
+                  }}>
+                    ✓ SUBMITTED
+                  </div>
+                )}
               </div>
-              
+
               {doc.type === 'file' ? (
-                <div className="file-upload-area">
+                <div className="file-upload-container">
                   <input
                     type="file"
                     id={doc.key}
-                    onChange={(e) => handleFileChange(doc.key, e.target.files[0])}
-                    className="file-input"
+                    onChange={(e) => handleFileSelect(doc.key, e.target.files[0])}
+                    style={{ display: 'none' }}
                     accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
+                    disabled={isReadOnly && !isEditing}
                   />
                   <label htmlFor={doc.key} className="file-upload-label">
-                    <div className="upload-icon">
-                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                        <polyline points="7,10 12,15 17,10"></polyline>
-                        <line x1="12" y1="15" x2="12" y2="3"></line>
-                      </svg>
-                    </div>
-                    <span className="upload-text">
-                      {documents[doc.key] ? documents[doc.key].name : 'Choose file'}
-                    </span>
+                    {uploading ? (
+                      <span>Uploading...</span>
+                    ) : (
+                      <span>Choose Document</span>
+                    )}
                   </label>
+                  {selectedFiles[doc.key] && (
+                    <div className="uploaded-file-info">
+                      <span className="file-name">✓ {selectedFiles[doc.key].name} selected</span>
+                      <button
+                        type="button"
+                        className="remove-file-btn"
+                        onClick={() => setSelectedFiles(prev => {
+                          const newFiles = { ...prev };
+                          delete newFiles[doc.key];
+                          return newFiles;
+                        })}
+                        disabled={isReadOnly && !isEditing}
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  )}
+                  {documents[doc.key] && !selectedFiles[doc.key] && (
+                    <div className="uploaded-file-info">
+                      <div className="file-info-content">
+                        <span className="file-name">✓ </span>
+                        <a
+                          href={documents[doc.key]}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="file-url"
+                        >
+                          {documents[doc.key]}
+                        </a>
+                      </div>
+                      <button
+                        type="button"
+                        className="remove-file-btn"
+                        onClick={() => setDocuments(prev => ({
+                          ...prev,
+                          [doc.key]: null
+                        }))}
+                        disabled={isReadOnly && !isEditing}
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  )}
                 </div>
               ) : (
                 <div className="text-input-area">
@@ -404,7 +620,7 @@ const KYCDocuments = () => {
                   />
                 </div>
               )}
-              
+
               {errors[doc.key] && <span className="error-message">{errors[doc.key]}</span>}
             </div>
           ))}
@@ -429,17 +645,29 @@ const KYCDocuments = () => {
           )}
         </div>
       </form>
-      
+
       <Snackbar
         open={alert.open}
         autoHideDuration={6000}
         onClose={handleCloseAlert}
         anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+        sx={{
+          zIndex: 9999, // Ensure it appears above the header (header is typically z-index 1200)
+          '& .MuiSnackbar-root': {
+            zIndex: 9999
+          }
+        }}
       >
-        <Alert 
-          onClose={handleCloseAlert} 
+        <Alert
+          onClose={handleCloseAlert}
           severity={alert.severity}
-          sx={{ width: '100%' }}
+          sx={{
+            width: '100%',
+            zIndex: 9999,
+            boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)',
+            backdropFilter: 'blur(10px)',
+            border: '1px solid rgba(255, 255, 255, 0.1)'
+          }}
         >
           {alert.message}
         </Alert>

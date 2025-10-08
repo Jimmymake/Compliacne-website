@@ -40,7 +40,7 @@ const CompanyInfo = () => {
   const [isReadOnly, setIsReadOnly] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [originalData, setOriginalData] = useState(null);
-  
+
   const [alert, setAlert] = useState({
     open: false,
     message: "",
@@ -71,13 +71,13 @@ const CompanyInfo = () => {
         if (profileResponse.ok) {
           const userData = await profileResponse.json();
           console.log('Company Info API Response:', userData);
-          
+
           // Try different possible data structures
           let companyData = null;
           console.log('Full userData.forms:', userData.forms);
           console.log('userData.forms?.companyinformation:', userData.forms?.companyinformation);
           console.log('userData.forms?.companyinfor:', userData.forms?.companyinfor);
-          
+
           // Check for companyinformation first (correct API response format)
           if (userData.forms?.companyinformation && Object.keys(userData.forms.companyinformation).length > 0) {
             companyData = userData.forms.companyinformation;
@@ -89,7 +89,7 @@ const CompanyInfo = () => {
             companyData = userData.forms.companyinfor.companyinfor;
             console.log('Using companyinfor.companyinfor:', companyData);
           }
-          
+
           if (companyData) {
             console.log('Setting company info data:', companyData);
             console.log('Company data keys:', Object.keys(companyData));
@@ -151,7 +151,7 @@ const CompanyInfo = () => {
   // Helper function to get input props for read-only state
   const getInputProps = (fieldName) => ({
     readOnly: isReadOnly && !isEditing,
-    style: isReadOnly && !isEditing ? { 
+    style: isReadOnly && !isEditing ? {
       cursor: 'not-allowed',
       opacity: 0.7
     } : {}
@@ -159,7 +159,7 @@ const CompanyInfo = () => {
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
-    
+
     if (name.startsWith('contactPerson.')) {
       const field = name.split('.')[1];
       setFormData(prev => ({
@@ -198,7 +198,7 @@ const CompanyInfo = () => {
         [name]: type === 'checkbox' ? checked : value
       }));
     }
-    
+
     // Clear error when user starts typing
     if (errors[name]) {
       setErrors(prev => ({
@@ -210,7 +210,7 @@ const CompanyInfo = () => {
 
   const validateForm = () => {
     const newErrors = {};
-    
+
     if (!formData.companyName.trim()) newErrors.companyName = 'Company name is required';
     if (!formData.merchantUrls.trim()) newErrors.merchantUrls = 'Merchant URL is required';
     if (!formData.dateOfIncorporation.trim()) newErrors.dateOfIncorporation = 'Date of incorporation is required';
@@ -222,7 +222,7 @@ const CompanyInfo = () => {
     if (!formData.businessDescription.trim()) newErrors.businessDescription = 'Business description is required';
     if (!formData.sourceOfFunds.trim()) newErrors.sourceOfFunds = 'Source of funds is required';
     if (!formData.purpose.trim()) newErrors.purpose = 'Business purpose is required';
-    
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -258,7 +258,7 @@ const CompanyInfo = () => {
             message: successMessage,
             severity: "success"
           });
-          
+
           // Update original data with the current form data and set to read-only after successful save
           setOriginalData(JSON.parse(JSON.stringify(formData)));
           setIsReadOnly(true);
@@ -323,7 +323,23 @@ const CompanyInfo = () => {
               </button>
             ) : null}
           </div> */}
+      
         </div>
+        {isReadOnly && !isEditing && (
+          <div style={{ 
+            color: '#4caf50', 
+            fontSize: '1rem', 
+            marginTop: '0.5rem',
+            fontWeight: 'bold',
+            backgroundColor: '#e8f5e8',
+            padding: '0.5rem 1rem',
+            borderRadius: '4px',
+            border: '1px solid #4caf50',
+            display: 'inline-block'
+          }}>
+            ✓ SUBMITTED - Company  information completed
+          </div>
+        )}
       </div>
 
       <form onSubmit={handleSubmit} className="kyc-form">
@@ -336,7 +352,7 @@ const CompanyInfo = () => {
               name="companyName"
               value={formData.companyName}
               onChange={handleInputChange}
-              placeholder="Company Name"
+              placeholder="Enter Company Name"
               className={errors.companyName ? 'error' : ''}
               {...getInputProps('companyName')}
             />
@@ -351,7 +367,7 @@ const CompanyInfo = () => {
               name="merchantUrls"
               value={formData.merchantUrls}
               onChange={handleInputChange}
-              placeholder="https://www.example.com"
+              placeholder="Enter Merchant URL"
               className={errors.merchantUrls ? 'error' : ''}
               {...getInputProps('merchantUrls')}
             />
@@ -383,7 +399,7 @@ const CompanyInfo = () => {
               name="incorporationNumber"
               value={formData.incorporationNumber}
               onChange={handleInputChange}
-              placeholder="Company Reg Number"
+              placeholder="Enter Company Reg Number"
               className={errors.incorporationNumber ? 'error' : ''}
               {...getInputProps('incorporationNumber')}
             />
@@ -398,7 +414,7 @@ const CompanyInfo = () => {
               name="companyEmail"
               value={formData.companyEmail}
               onChange={handleInputChange}
-              placeholder="example@company.com"
+              placeholder="Enter Company Email"
               className={errors.companyEmail ? 'error' : ''}
               {...getInputProps('companyEmail')}
             />
@@ -408,6 +424,7 @@ const CompanyInfo = () => {
           <div className="form-group">
             <label htmlFor="countryOfIncorporation">Country of Incorporation *</label>
             <select
+            placeholder="Enter Country of Incorporation"
               id="countryOfIncorporation"
               name="countryOfIncorporation"
               value={formData.countryOfIncorporation}
@@ -432,7 +449,7 @@ const CompanyInfo = () => {
               name="contactPerson.fullName"
               value={formData.contactPerson.fullName}
               onChange={handleInputChange}
-              placeholder="John Doe"
+              placeholder="Enter Full Name"
               className={errors['contactPerson.fullName'] ? 'error' : ''}
               {...getInputProps('contactPerson.fullName')}
             />
@@ -447,7 +464,7 @@ const CompanyInfo = () => {
               name="contactPerson.phone"
               value={formData.contactPerson.phone}
               onChange={handleInputChange}
-              placeholder="+254717126550"
+              placeholder="Enter Phone Number"
               className={errors['contactPerson.phone'] ? 'error' : ''}
               {...getInputProps('contactPerson.phone')}
             />
@@ -462,7 +479,7 @@ const CompanyInfo = () => {
               name="contactPerson.email"
               value={formData.contactPerson.email}
               onChange={handleInputChange}
-              placeholder="mayekujimmy997@gmail.com"
+              placeholder="Enter Contact Person Email"
               className={errors['contactPerson.email'] ? 'error' : ''}
               {...getInputProps('contactPerson.email')}
             />
@@ -476,7 +493,7 @@ const CompanyInfo = () => {
               name="businessDescription"
               value={formData.businessDescription}
               onChange={handleInputChange}
-              placeholder="Business Description/Industry"
+              placeholder="Enter Business Description/Industry"
               rows="3"
               className={errors.businessDescription ? 'error' : ''}
               {...getInputProps('businessDescription')}
@@ -491,7 +508,7 @@ const CompanyInfo = () => {
               name="sourceOfFunds"
               value={formData.sourceOfFunds}
               onChange={handleInputChange}
-              placeholder="Company Source of Funds and Wealth"
+              placeholder="Enter Company Source of Funds and Wealth"
               rows="3"
               className={errors.sourceOfFunds ? 'error' : ''}
               {...getInputProps('sourceOfFunds')}
@@ -506,7 +523,7 @@ const CompanyInfo = () => {
               name="purpose"
               value={formData.purpose}
               onChange={handleInputChange}
-              placeholder="Purpose and Intended Nature of Business Relationship with Us"
+              placeholder="Enter Purpose and Intended Nature of Business Relationship with Us"
               rows="3"
               className={errors.purpose ? 'error' : ''}
               {...getInputProps('purpose')}
@@ -540,7 +557,7 @@ const CompanyInfo = () => {
                 <span>No</span>
               </label>
             </div>
-            
+
             {formData.licensingRequired && (
               <div className="conditional-fields">
                 <input
@@ -556,7 +573,7 @@ const CompanyInfo = () => {
                   name="licenseInfo.licencetype"
                   value={formData.licenseInfo.licencetype}
                   onChange={handleInputChange}
-                  placeholder="type"
+                  placeholder="Enter Type"
                   {...getInputProps('licenseInfo.licencetype')}
                 />
                 <input
@@ -564,7 +581,7 @@ const CompanyInfo = () => {
                   name="licenseInfo.jurisdiction"
                   value={formData.licenseInfo.jurisdiction}
                   onChange={handleInputChange}
-                  placeholder="jurisdiction"
+                  placeholder="Enter Jurisdiction"
                   {...getInputProps('licenseInfo.jurisdiction')}
                 />
               </div>
@@ -579,7 +596,7 @@ const CompanyInfo = () => {
               name="bankname"
               value={formData.bankname}
               onChange={handleInputChange}
-              placeholder="UBA"
+              placeholder="Enter Bank Name"
               {...getInputProps('bankname')}
             />
           </div>
@@ -592,7 +609,7 @@ const CompanyInfo = () => {
               name="swiftcode"
               value={formData.swiftcode}
               onChange={handleInputChange}
-              placeholder="324-234"
+              placeholder="Enter SWIFT Code"
               {...getInputProps('swiftcode')}
             />
           </div>
@@ -605,7 +622,7 @@ const CompanyInfo = () => {
               name="targetCountries.region"
               value={formData.targetCountries[0].region}
               onChange={handleInputChange}
-              placeholder="Africa"
+              placeholder="Enter Region"
               {...getInputProps('targetCountries.region')}
             />
           </div>
@@ -618,7 +635,7 @@ const CompanyInfo = () => {
               name="targetCountries.percent"
               value={formData.targetCountries[0].percent}
               onChange={handleInputChange}
-              placeholder="34"
+              placeholder="Enter Percentage"
               min="0"
               max="100"
               {...getInputProps('targetCountries.percent')}
@@ -639,7 +656,7 @@ const CompanyInfo = () => {
                   topCountries: countries
                 }));
               }}
-              placeholder="Kenya, Uganda"
+              placeholder="Enter Top Countries"
               {...getInputProps('topCountries')}
             />
           </div>
@@ -652,7 +669,7 @@ const CompanyInfo = () => {
               name="previouslyUsedGateways"
               value={formData.previouslyUsedGateways}
               onChange={handleInputChange}
-              placeholder="None"
+              placeholder="Enter Previously Used Payment Gateways"
               {...getInputProps('previouslyUsedGateways')}
             />
           </div>
@@ -675,7 +692,7 @@ const CompanyInfo = () => {
           </button>
         </div> */}
 
-<div className="form-actions">
+        <div className="form-actions">
           {isReadOnly && !isEditing ? (
             <button type="button" onClick={handleEdit} className="btn-secondary">
               Update
@@ -698,17 +715,29 @@ const CompanyInfo = () => {
           )}
         </div>
       </form>
-      
+
       <Snackbar
         open={alert.open}
         autoHideDuration={6000}
         onClose={handleCloseAlert}
         anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+        sx={{
+          zIndex: 9999, // Ensure it appears above the header (header is typically z-index 1200)
+          '& .MuiSnackbar-root': {
+            zIndex: 9999
+          }
+        }}
       >
-        <Alert 
-          onClose={handleCloseAlert} 
+        <Alert
+          onClose={handleCloseAlert}
           severity={alert.severity}
-          sx={{ width: '100%' }}
+          sx={{
+            width: '100%',
+            zIndex: 9999,
+            boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)',
+            backdropFilter: 'blur(10px)',
+            border: '1px solid rgba(255, 255, 255, 0.1)'
+          }}
         >
           {alert.message}
         </Alert>

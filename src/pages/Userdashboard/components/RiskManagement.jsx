@@ -26,6 +26,8 @@ const RiskManagement = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [errors, setErrors] = useState({});
+  const [isUploading, setIsUploading] = useState(false);
+  const [selectedFile, setSelectedFile] = useState(null);
   
   const [alert, setAlert] = useState({
     open: false,
@@ -38,6 +40,58 @@ const RiskManagement = () => {
       return;
     }
     setAlert(prev => ({ ...prev, open: false }));
+  };
+
+  // Handle file selection for digital signature
+  const handleFileSelect = (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    // Validate file type
+    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
+    if (!allowedTypes.includes(file.type)) {
+      setAlert({
+        open: true,
+        message: "Please upload a valid image file (JPEG, PNG, or GIF)",
+        severity: "error"
+      });
+      return;
+    }
+
+    // Validate file size (max 5MB)
+    const maxSize = 5 * 1024 * 1024; // 5MB
+    if (file.size > maxSize) {
+      setAlert({
+        open: true,
+        message: "File size must be less than 5MB",
+        severity: "error"
+      });
+      return;
+    }
+
+    // Store the file for later upload
+    setSelectedFile(file);
+    setAlert({
+      open: true,
+      message: "File selected successfully! Click 'Save & Continue' to upload.",
+      severity: "success"
+    });
+  };
+
+  // Upload file to API
+  const uploadSignatureFile = async (file) => {
+    const formData = new FormData();
+    formData.append("file", file, "1f09c9a4-b8d3-4f50-bbeb-d13a5d340016");
+
+    const requestOptions = {
+      method: "POST",
+      body: formData,
+      redirect: "follow"
+    };
+
+    const response = await fetch("https://images.cradlevoices.com/", requestOptions);
+    const result = await response.text();
+    return result;
   };
 
   // Fetch user data and form status on component mount
@@ -178,6 +232,25 @@ const RiskManagement = () => {
     e.preventDefault();
     if (validateForm()) {
       try {
+        setIsUploading(true);
+        
+        // Upload signature file if one is selected
+        let signatureResponse = formData.indroducer.signature;
+        if (selectedFile) {
+          try {
+            signatureResponse = await uploadSignatureFile(selectedFile);
+          } catch (uploadError) {
+            console.error('Signature upload error:', uploadError);
+            setAlert({
+              open: true,
+              message: "Failed to upload signature. Please try again.",
+              severity: "error"
+            });
+            setIsUploading(false);
+            return;
+          }
+        }
+
         // Transform data to match API structure
         const payload = {
           merchantid: localStorage.getItem('merchantId') || 'MID987654',
@@ -194,7 +267,7 @@ const RiskManagement = () => {
             name: formData.indroducer.name,
             position: formData.indroducer.position,
             date: formData.indroducer.date ? new Date(formData.indroducer.date).toISOString() : '',
-            signature: formData.indroducer.signature
+            signature: signatureResponse
           }
         };
 
@@ -219,8 +292,19 @@ const RiskManagement = () => {
             severity: "success"
           });
           
+          // Update form data with the uploaded signature response
+          const updatedFormData = {
+            ...formData,
+            indroducer: {
+              ...formData.indroducer,
+              signature: signatureResponse
+            }
+          };
+          
           // Update original data and set to read-only after successful save
-          setOriginalData(formData);
+          setOriginalData(updatedFormData);
+          setFormData(updatedFormData);
+          setSelectedFile(null); // Clear selected file
           setIsReadOnly(true);
           setIsEditing(false);
         } else {
@@ -238,6 +322,8 @@ const RiskManagement = () => {
           message: "Network error. Please check your connection and try again.",
           severity: "error"
         });
+      } finally {
+        setIsUploading(false);
       }
     }
   };
@@ -262,8 +348,18 @@ const RiskManagement = () => {
         <h2>Compliance and Risk Management</h2>
         <p>Please fill out the following information to ensure compliance with regulatory requirements and risk management protocols. Note: All fields marked with an asterisk (*) are required.</p>
         {isReadOnly && !isEditing && (
-          <div style={{ color: '#7ef9a3', fontSize: '0.9rem', marginTop: '0.5rem' }}>
-            ✓ Form completed - Click "Update" to make changes
+          <div style={{ 
+            color: '#4caf50', 
+            fontSize: '1rem', 
+            marginTop: '0.5rem',
+            fontWeight: 'bold',
+            backgroundColor: '#e8f5e8',
+            padding: '0.5rem 1rem',
+            borderRadius: '4px',
+            border: '1px solid #4caf50',
+            display: 'inline-block'
+          }}>
+            ✓ SUBMITTED - Risk assessment completed
           </div>
         )}
       </div>
@@ -308,7 +404,7 @@ const RiskManagement = () => {
                 name="officerdetails.fullname"
                 value={formData.officerdetails.fullname}
                 onChange={handleInputChange}
-                placeholder="John Doe"
+                placeholder="Enter Full Name"
                 className={errors['officerdetails.fullname'] ? 'error' : ''}
               />
               {errors['officerdetails.fullname'] && <span className="error-message">{errors['officerdetails.fullname']}</span>}
@@ -322,7 +418,7 @@ const RiskManagement = () => {
                 name="officerdetails.telephonenumber"
                 value={formData.officerdetails.telephonenumber}
                 onChange={handleInputChange}
-                placeholder="+254700123456"
+                placeholder="Enter Telephone Number"
                 className={errors['officerdetails.telephonenumber'] ? 'error' : ''}
               />
               {errors['officerdetails.telephonenumber'] && <span className="error-message">{errors['officerdetails.telephonenumber']}</span>}
@@ -336,7 +432,7 @@ const RiskManagement = () => {
                 name="officerdetails.email"
                 value={formData.officerdetails.email}
                 onChange={handleInputChange}
-                placeholder="johndoe@example.com"
+                placeholder="Enter Email Address"
                 className={errors['officerdetails.email'] ? 'error' : ''}
               />
               {errors['officerdetails.email'] && <span className="error-message">{errors['officerdetails.email']}</span>}
@@ -375,15 +471,17 @@ const RiskManagement = () => {
         <div className="form-section">
           <div className="form-group">
             <label htmlFor="hereaboutus">Where Did You Hear About Us? *</label>
-            <input
-              type="text"
-              id="hereaboutus"
-              name="hereaboutus"
-              value={formData.hereaboutus}
-              onChange={handleInputChange}
-              placeholder="Through a business partner"
-              className={errors.hereaboutus ? 'error' : ''}
-            />
+            <div className="others-input">
+              <input
+                type="text"
+                id="hereaboutus"
+                name="hereaboutus"
+                value={formData.hereaboutus}
+                onChange={handleInputChange}
+                placeholder="Enter Where  You heard About Us?"
+                className={errors.hereaboutus ? 'error' : ''}
+              />
+            </div>
             {errors.hereaboutus && <span className="error-message">{errors.hereaboutus}</span>}
           </div>
         </div>
@@ -399,7 +497,7 @@ const RiskManagement = () => {
                 name="indroducer.name"
                 value={formData.indroducer.name}
                 onChange={handleInputChange}
-                placeholder="Jane Smith"
+                placeholder="Enter Introducer name"
                 className={errors['indroducer.name'] ? 'error' : ''}
               />
               {errors['indroducer.name'] && <span className="error-message">{errors['indroducer.name']}</span>}
@@ -413,7 +511,7 @@ const RiskManagement = () => {
                 name="indroducer.position"
                 value={formData.indroducer.position}
                 onChange={handleInputChange}
-                placeholder="Business Consultant"
+                placeholder="Enter position"
                 className={errors['indroducer.position'] ? 'error' : ''}
               />
               {errors['indroducer.position'] && <span className="error-message">{errors['indroducer.position']}</span>}
@@ -440,15 +538,66 @@ const RiskManagement = () => {
         <div className="form-section">
           <h3>Signature</h3>
           <div className="form-group">
-            <label htmlFor="indroducer.signature">Digital Signature</label>
-            <textarea
-              id="indroducer.signature"
-              name="indroducer.signature"
-              value={formData.indroducer.signature}
-              onChange={handleInputChange}
-              placeholder="JaneSmithSignature.png"
-              rows="3"
-            />
+            <label htmlFor="signature-upload">Digital Signature</label>
+            <div className="file-upload-container">
+              <input
+                type="file"
+                id="signature-upload"
+                accept="image/*"
+                onChange={handleFileSelect}
+                style={{ display: 'none' }}
+                disabled={isReadOnly && !isEditing}
+              />
+              <label htmlFor="signature-upload" className="file-upload-label">
+                {isUploading ? (
+                  <span>Uploading...</span>
+                ) : (
+                  <span>Choose Signature Image</span>
+                )}
+              </label>
+              {selectedFile && (
+                <div className="uploaded-file-info">
+                  <span className="file-name">✓ {selectedFile.name} selected</span>
+                  <button 
+                    type="button" 
+                    className="remove-file-btn"
+                    onClick={() => setSelectedFile(null)}
+                    disabled={isReadOnly && !isEditing}
+                  >
+                    Remove
+                  </button>
+                </div>
+              )}
+              {formData.indroducer.signature && !selectedFile && (
+                <div className="uploaded-file-info">
+                  <div className="file-info-content">
+                    <span className="file-name">✓ </span>
+                    <a 
+                      href={formData.indroducer.signature} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="file-url"
+                    >
+                      {formData.indroducer.signature}
+                    </a>
+                  </div>
+                  <button 
+                    type="button" 
+                    className="remove-file-btn"
+                    onClick={() => setFormData(prev => ({
+                      ...prev,
+                      indroducer: {
+                        ...prev.indroducer,
+                        signature: ''
+                      }
+                    }))}
+                    disabled={isReadOnly && !isEditing}
+                  >
+                    Remove
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
         </div>
 
@@ -464,8 +613,8 @@ const RiskManagement = () => {
                   Cancel
                 </button>
               )}
-              <button type="submit" className="btn-primary">
-                {originalData ? 'Update & Continue' : 'Save & Continue'}
+              <button type="submit" className="btn-primary" disabled={isUploading}>
+                {isUploading ? 'Uploading...' : (originalData ? 'Update & Continue' : 'Save & Continue')}
               </button>
             </>
           )}
@@ -477,11 +626,23 @@ const RiskManagement = () => {
         autoHideDuration={6000}
         onClose={handleCloseAlert}
         anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+        sx={{
+          zIndex: 9999, // Ensure it appears above the header (header is typically z-index 1200)
+          '& .MuiSnackbar-root': {
+            zIndex: 9999
+          }
+        }}
       >
         <Alert 
           onClose={handleCloseAlert} 
           severity={alert.severity}
-          sx={{ width: '100%' }}
+          sx={{ 
+            width: '100%',
+            zIndex: 9999,
+            boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)',
+            backdropFilter: 'blur(10px)',
+            border: '1px solid rgba(255, 255, 255, 0.1)'
+          }}
         >
           {alert.message}
         </Alert>

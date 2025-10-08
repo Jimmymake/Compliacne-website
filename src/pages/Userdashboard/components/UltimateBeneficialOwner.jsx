@@ -244,8 +244,18 @@ const UltimateBeneficialOwner = () => {
         <h2>Ultimate Beneficial Owner {uboList.length > 1 ? uboList.findIndex(ubo => ubo.id === uboList[0].id) + 1 : 1}</h2>
         <p>Please provide details of all ultimate beneficial owners</p>
         {isReadOnly && !isEditing && (
-          <div style={{ color: '#7ef9a3', fontSize: '0.9rem', marginTop: '0.5rem' }}>
-            ✓ Form completed - Click "Update" to make changes
+          <div style={{ 
+            color: '#4caf50', 
+            fontSize: '1rem', 
+            marginTop: '0.5rem',
+            fontWeight: 'bold',
+            backgroundColor: '#e8f5e8',
+            padding: '0.5rem 1rem',
+            borderRadius: '4px',
+            border: '1px solid #4caf50',
+            display: 'inline-block'
+          }}>
+            ✓ SUBMITTED - UBO information completed
           </div>
         )}
       </div>
@@ -274,7 +284,7 @@ const UltimateBeneficialOwner = () => {
                   id={`fullname-${ubo.id}`}
                   value={ubo.fullname}
                   onChange={(e) => handleInputChange(ubo.id, 'fullname', e.target.value)}
-                  placeholder="Alice Doe"
+                  placeholder="Enter Full Name"
                   className={errors[`${ubo.id}-fullname`] ? 'error' : ''}
                 />
                 {errors[`${ubo.id}-fullname`] && <span className="error-message">{errors[`${ubo.id}-fullname`]}</span>}
@@ -287,7 +297,7 @@ const UltimateBeneficialOwner = () => {
                   id={`nationality-${ubo.id}`}
                   value={ubo.nationality}
                   onChange={(e) => handleInputChange(ubo.id, 'nationality', e.target.value)}
-                  placeholder="Kenyan"
+                  placeholder="Enter Nationality"
                   className={errors[`${ubo.id}-nationality`] ? 'error' : ''}
                 />
                 {errors[`${ubo.id}-nationality`] && <span className="error-message">{errors[`${ubo.id}-nationality`]}</span>}
@@ -300,7 +310,7 @@ const UltimateBeneficialOwner = () => {
                   id={`residentialadress-${ubo.id}`}
                   value={ubo.residentialadress}
                   onChange={(e) => handleInputChange(ubo.id, 'residentialadress', e.target.value)}
-                  placeholder="Nairobi"
+                  placeholder="Enter Residential Address"
                   className={errors[`${ubo.id}-residentialadress`] ? 'error' : ''}
                 />
                 {errors[`${ubo.id}-residentialadress`] && <span className="error-message">{errors[`${ubo.id}-residentialadress`]}</span>}
@@ -313,7 +323,7 @@ const UltimateBeneficialOwner = () => {
                   id={`persentageofownership-${ubo.id}`}
                   value={ubo.persentageofownership}
                   onChange={(e) => handleInputChange(ubo.id, 'persentageofownership', e.target.value)}
-                  placeholder="60"
+                  placeholder="Enter Percentage of Ownership"
                   min="0"
                   max="100"
                   step="0.01"
@@ -329,7 +339,7 @@ const UltimateBeneficialOwner = () => {
                   id={`souceoffunds-${ubo.id}`}
                   value={ubo.souceoffunds}
                   onChange={(e) => handleInputChange(ubo.id, 'souceoffunds', e.target.value)}
-                  placeholder="Investments"
+                  placeholder="Enter Source of Funds"
                   className={errors[`${ubo.id}-souceoffunds`] ? 'error' : ''}
                 />
                 {errors[`${ubo.id}-souceoffunds`] && <span className="error-message">{errors[`${ubo.id}-souceoffunds`]}</span>}
@@ -368,7 +378,7 @@ const UltimateBeneficialOwner = () => {
                     id={`pepdetails-${ubo.id}`}
                     value={ubo.pepdetails}
                     onChange={(e) => handleInputChange(ubo.id, 'pepdetails', e.target.value)}
-                    placeholder="ddede"
+                    placeholder="Enter PEP Details"
                     rows="3"
                   />
                 </div>
@@ -409,11 +419,23 @@ const UltimateBeneficialOwner = () => {
         autoHideDuration={6000}
         onClose={handleCloseAlert}
         anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+        sx={{
+          zIndex: 9999, // Ensure it appears above the header (header is typically z-index 1200)
+          '& .MuiSnackbar-root': {
+            zIndex: 9999
+          }
+        }}
       >
         <Alert 
           onClose={handleCloseAlert} 
           severity={alert.severity}
-          sx={{ width: '100%' }}
+          sx={{ 
+            width: '100%',
+            zIndex: 9999,
+            boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)',
+            backdropFilter: 'blur(10px)',
+            border: '1px solid rgba(255, 255, 255, 0.1)'
+          }}
         >
           {alert.message}
         </Alert>

@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import logo from '../../assets/logo.png';
 import { 
   AppBar, 
   Toolbar, 
@@ -11,22 +13,22 @@ import {
   Box,
   Divider,
   ListItemIcon,
-  ListItemText
+  ListItemText,
+  Chip
 } from '@mui/material';
 import {
   Menu as MenuIcon,
   Notifications as NotificationsIcon,
   AccountCircle,
-  Settings,
   Logout,
   Dashboard,
   People,
-  Assessment,
-  Security
+  Assessment
 } from '@mui/icons-material';
 import './AdminHeader.scss';
 
 const AdminHeader = ({ onMenuClick, unreadNotifications = 0 }) => {
+  const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = useState(null);
   const [notificationAnchor, setNotificationAnchor] = useState(null);
   const [userMenuAnchor, setUserMenuAnchor] = useState(null);
@@ -54,14 +56,27 @@ const AdminHeader = ({ onMenuClick, unreadNotifications = 0 }) => {
   };
 
   const handleProfile = () => {
-    console.log('Navigate to profile');
+    // Get current admin's merchant ID from localStorage or token
+    const token = localStorage.getItem('token');
+    if (token) {
+      try {
+        // Decode token to get merchant ID (simple base64 decode for JWT payload)
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        const merchantId = payload.merchantId;
+        
+        if (merchantId) {
+          // Navigate to admin detail page
+          navigate(`/AdminDashboard/merchant/${merchantId}`);
+        } else {
+          console.error('No merchant ID found in token');
+        }
+      } catch (error) {
+        console.error('Error decoding token:', error);
+      }
+    }
     handleUserMenuClose();
   };
 
-  const handleSettings = () => {
-    console.log('Navigate to settings');
-    handleUserMenuClose();
-  };
 
   const mockNotifications = [
     {
@@ -123,43 +138,71 @@ const AdminHeader = ({ onMenuClick, unreadNotifications = 0 }) => {
             <MenuIcon />
           </IconButton>
           
-          <div className="header-brand">
-            <div className="brand-logo">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M12 2L2 7l10 5 10-5-10-5z"/>
-                <path d="M2 17l10 5 10-5"/>
-                <path d="M2 12l10 5 10-5"/>
-              </svg>
-            </div>
+          {/* <div className="header-brand"> */}
+          <div className="brand-logo">
+            <img 
+              src={logo} 
+              alt="MAMLAKA HUB Logo" 
+              style={{ 
+                width: '100px', 
+                height: '100px', 
+                objectFit: 'contain' 
+              }} 
+            />
+          </div>
             <div className="brand-text">
               <Typography variant="h6" className="brand-title">
-                MAMLAKA HUB
+                MAMLAKA HUB & SPOKE
               </Typography>
-              <Typography variant="caption" className="brand-subtitle">
+              {/* <Typography variant="caption" className="brand-subtitle">
                 SPOKE TRADE NETWORK
-              </Typography>
+              </Typography> */}
             </div>
           </div>
-        </div>
+        {/* </div> */}
 
-        {/* Center Section - Search (Optional) */}
-        <div className="header-center">
-          {/* Search can be added here if needed */}
-        </div>
-
-        {/* Right Section - Notifications & User Menu */}
+        {/* Right Section - Notifications and User Menu */}
         <div className="header-right">
+          {/* Admin Name Chip */}
+          <Chip
+            label={(() => {
+              const token = localStorage.getItem('token');
+              if (token) {
+                try {
+                  const payload = JSON.parse(atob(token.split('.')[1]));
+                  return payload.fullname || 'Admin User';
+                } catch (error) {
+                  return 'Admin User';
+                }
+              }
+              return 'Admin User';
+            })()}
+            size="small"
+            sx={{
+              backgroundColor: 'rgba(139, 92, 246, 0.1)',
+              color: '#ffffff',
+              border: '1px solid rgba(139, 92, 246, 0.3)',
+              fontSize: '0.75rem',
+              height: '28px',
+              mr: 1,
+              '& .MuiChip-label': {
+                px: 1.5
+              }
+            }}
+          />
+          
           {/* Notifications */}
           <IconButton
             color="inherit"
             onClick={handleNotificationOpen}
             className="notification-button"
+            sx={{ mr: 1 }}
           >
             <Badge badgeContent={unreadNotifications} color="error" max={99}>
               <NotificationsIcon />
             </Badge>
           </IconButton>
-
+          
           {/* User Menu */}
           <IconButton
             color="inherit"
@@ -167,7 +210,18 @@ const AdminHeader = ({ onMenuClick, unreadNotifications = 0 }) => {
             className="user-button"
           >
             <Avatar className="user-avatar" sx={{ width: 32, height: 32 }}>
-              J
+              {(() => {
+                const token = localStorage.getItem('token');
+                if (token) {
+                  try {
+                    const payload = JSON.parse(atob(token.split('.')[1]));
+                    return payload.fullname ? payload.fullname.charAt(0).toUpperCase() : 'A';
+                  } catch (error) {
+                    return 'A';
+                  }
+                }
+                return 'A';
+              })()}
             </Avatar>
           </IconButton>
         </div>
@@ -243,11 +297,48 @@ const AdminHeader = ({ onMenuClick, unreadNotifications = 0 }) => {
         anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
       >
         <div className="user-menu-header">
-          <Avatar className="user-avatar-large">J</Avatar>
+          <Avatar className="user-avatar-large">
+            {(() => {
+              const token = localStorage.getItem('token');
+              if (token) {
+                try {
+                  const payload = JSON.parse(atob(token.split('.')[1]));
+                  return payload.fullname ? payload.fullname.charAt(0).toUpperCase() : 'A';
+                } catch (error) {
+                  return 'A';
+                }
+              }
+              return 'A';
+            })()}
+          </Avatar>
         <div className="user-info">
-          <Typography variant="subtitle1">Jimmy Mayeku</Typography>
+          <Typography variant="subtitle1">
+            {(() => {
+              const token = localStorage.getItem('token');
+              if (token) {
+                try {
+                  const payload = JSON.parse(atob(token.split('.')[1]));
+                  return payload.fullname || 'Admin User';
+                } catch (error) {
+                  return 'Admin User';
+                }
+              }
+              return 'Admin User';
+            })()}
+          </Typography>
           <Typography variant="caption" color="text.secondary">
-            jimmy@mamlakahub.com
+            {(() => {
+              const token = localStorage.getItem('token');
+              if (token) {
+                try {
+                  const payload = JSON.parse(atob(token.split('.')[1]));
+                  return payload.email || 'admin@example.com';
+                } catch (error) {
+                  return 'admin@example.com';
+                }
+              }
+              return 'admin@example.com';
+            })()}
           </Typography>
         </div>
         </div>
@@ -258,20 +349,6 @@ const AdminHeader = ({ onMenuClick, unreadNotifications = 0 }) => {
             <AccountCircle fontSize="small" />
           </ListItemIcon>
           <ListItemText>Profile</ListItemText>
-        </MenuItem>
-        
-        <MenuItem onClick={handleSettings}>
-          <ListItemIcon>
-            <Settings fontSize="small" />
-          </ListItemIcon>
-          <ListItemText>Settings</ListItemText>
-        </MenuItem>
-        
-        <MenuItem onClick={handleSettings}>
-          <ListItemIcon>
-            <Security fontSize="small" />
-          </ListItemIcon>
-          <ListItemText>Security</ListItemText>
         </MenuItem>
         
         <Divider />

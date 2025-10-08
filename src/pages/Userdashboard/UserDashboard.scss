@@ -149,12 +149,12 @@
 
 // Ensure sidebar doesn't blur main content
 .sidebar-overlay {
-  backdrop-filter: blur(4px);
-  z-index: 998;
+  backdrop-filter: none; // Removed blur to fix sidebar visibility
+  z-index: 1299; // Just below sidebar
 }
 
 .sidebar {
-  z-index: 999;
+  z-index: 1300; // Higher than header to ensure visibility
   
   // Ensure sidebar content is not blurred
   * {

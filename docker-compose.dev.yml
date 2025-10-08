@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  # Development frontend
+  frontend:
+    build:
+      context: .
+      target: development
+    ports:
+      - "5173:5173"
+    volumes:
+      - .:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+      - VITE_API_URL=http://localhost:4000
+    networks:
+      - compliance-dev
+    stdin_open: true
+    tty: true
+
+  # Development backend (if you have one)
+  # backend:
+  #   build:
+  #     context: ./backend
+  #   ports:
+  #     - "4000:4000"
+  #   volumes:
+  #     - ./backend:/app
+  #     - /app/node_modules
+  #   environment:
+  #     - NODE_ENV=development
+  #   networks:
+  #     - compliance-dev
+
+networks:
+  compliance-dev:
+    driver: bridge
