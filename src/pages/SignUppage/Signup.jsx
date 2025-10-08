@@ -12,6 +12,7 @@ export default function SignupForm({ onSwitch }) {
     const [phonenumber, setPhonenumber] = useState("")
     const [password, setPassword] = useState('')
     const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [confirm, setConfirm] = useState('')
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState(null)
@@ -111,29 +112,87 @@ export default function SignupForm({ onSwitch }) {
 
             <div className="field">
                 <label htmlFor="signup-name">Full name</label>
-
-                <Authtextfield id="signup-name" value={name} onChange={e => setName(e.target.value)} placeholder="Jane Appleseed"></Authtextfield>
+                <input
+                    id="signup-name"
+                    type="text"
+                    value={name}
+                    onChange={e => setName(e.target.value)}
+                    placeholder="Jane Appleseed"
+                    className="border border-gray-300 rounded-md px-4 py-3 w-full focus:outline-none focus:ring-2 focus:ring-blue-500 text-lg"
+                    style={{ minHeight: '48px' }}
+                />
             </div>
 
             <div className="field">
                 <label htmlFor="signup-email">Email</label>
-
-                <Authtextfield id="signup-email" type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="jondoe@mail.com" ></Authtextfield>
+                <input
+                    id="signup-email"
+                    type="email"
+                    value={email}
+                    onChange={e => setEmail(e.target.value)}
+                    placeholder="jondoe@mail.com"
+                    className="border border-gray-300 rounded-md px-4 py-3 w-full focus:outline-none focus:ring-2 focus:ring-blue-500 text-lg"
+                    style={{ minHeight: '48px' }}
+                />
             </div>
 
             <div className="field">
                 <label htmlFor="signup-phonenumber">Phone Number</label>
-                <Authtextfield id="phonenumber" type="phone" value={phonenumber} onChange={e => setPhonenumber(e.target.value)} placeholder="+254717126559" ></Authtextfield>
+                <input
+                    id="phonenumber"
+                    type="tel"
+                    value={phonenumber}
+                    onChange={e => setPhonenumber(e.target.value)}
+                    placeholder="+254717126559"
+                    className="border border-gray-300 rounded-md px-4 py-3 w-full focus:outline-none focus:ring-2 focus:ring-blue-500 text-lg"
+                    style={{ minHeight: '48px' }}
+                />
             </div>
 
             <div className="field">
                 <label htmlFor="signup-password">Password</label>
-                <Authtextfield id="signup-password" type="password" value={password} onChange={e => setPassword(e.target.value)} placeholder="At least 6 characters" ></Authtextfield>
+                <div className="password-input-container" style={{ position: 'relative' }}>
+                    <input
+                        id="signup-password"
+                        type={showPassword ? "text" : "password"}
+                        value={password}
+                        onChange={e => setPassword(e.target.value)}
+                        placeholder="At least 6 characters"
+                        className="border border-gray-300 rounded-md px-4 py-3 w-full focus:outline-none focus:ring-2 focus:ring-blue-500 pr-12 text-lg"
+                        style={{ minHeight: '48px' }}
+                    />
+                    <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700 focus:outline-none"
+                        style={{ background: 'none', border: 'none', cursor: 'pointer' }}
+                    >
+                        {showPassword ? "🙈" : "👁️"}
+                    </button>
+                </div>
             </div>
 
             <div className="field">
                 <label htmlFor="signup-confirm">Confirm password</label>
-                <Authtextfield id="signup-confirm" type="password" value={confirm} onChange={e => setConfirm(e.target.value)} placeholder="Repeat password" ></Authtextfield>
+                <div className="password-input-container" style={{ position: 'relative' }}>
+                    <input
+                        id="signup-confirm"
+                        type={showConfirmPassword ? "text" : "password"}
+                        value={confirm}
+                        onChange={e => setConfirm(e.target.value)}
+                        placeholder="Repeat password"
+                        className="border border-gray-300 rounded-md px-4 py-3 w-full focus:outline-none focus:ring-2 focus:ring-blue-500 pr-12 text-lg"
+                        style={{ minHeight: '48px' }}
+                    />
+                    <button
+                        type="button"
+                        onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                        className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700 focus:outline-none"
+                        style={{ background: 'none', border: 'none', cursor: 'pointer' }}
+                    >
+                        {showConfirmPassword ? "🙈" : "👁️"}
+                    </button>
+                </div>
             </div>
 
             <div aria-live="polite" className="status">
@@ -141,7 +200,14 @@ export default function SignupForm({ onSwitch }) {
                 {success && <div className="success">{success}</div>}
             </div>
 
-            <button className="btn" type="submit" disabled={loading}>{loading ? 'Creating...' : 'Create account'}</button>
+            <button 
+                className="btn w-full py-3 px-4 text-lg font-medium rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" 
+                type="submit" 
+                disabled={loading}
+                style={{ minHeight: '48px' }}
+            >
+                {loading ? 'Creating...' : 'Create account'}
+            </button>
         </form>
     )
 }

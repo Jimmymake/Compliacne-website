@@ -190,8 +190,8 @@ const UserDashboard = () => {
             color: 'warning',
             bgColor: '#fff3e0',
             text: 'PENDING REVIEW',
-            message: 'Your application is under review.',
-            details: 'Our team is reviewing your submitted documents. You will be notified once the review is complete.'
+            message: '',
+            details: 'Ones all Documents are uploaded, our team will review your application.'
           };
       }
     };

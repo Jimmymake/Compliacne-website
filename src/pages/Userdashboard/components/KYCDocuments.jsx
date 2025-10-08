@@ -25,6 +25,8 @@ const KYCDocuments = () => {
   const [errors, setErrors] = useState({});
   const [uploading, setUploading] = useState(false);
   const [selectedFiles, setSelectedFiles] = useState({});
+  const [uploadProgress, setUploadProgress] = useState({});
+  const [uploadingFiles, setUploadingFiles] = useState(new Set());
 
   const [alert, setAlert] = useState({
     open: false,
@@ -97,6 +99,9 @@ const KYCDocuments = () => {
       setDocuments(originalData);
     }
     setErrors({});
+    setSelectedFiles({});
+    setUploadProgress({});
+    setUploadingFiles(new Set());
   };
 
   // Helper function to get input props for read-only state
@@ -206,7 +211,7 @@ const KYCDocuments = () => {
       const result = await response.text();
       console.log('Upload response:', result);
       
-      // Parse the response to check for errors
+      // Parse the response to check for errors and extract URL
       try {
         const parsedResult = JSON.parse(result);
         
@@ -217,8 +222,17 @@ const KYCDocuments = () => {
           throw new Error(errorMsg);
         }
         
-        // Check for success indicators
-        if (parsedResult.status === 'success' || parsedResult.url || parsedResult.fileUrl) {
+        // Check for success indicators and extract URL
+        if (parsedResult.status === 'success') {
+          // Extract URL from the response structure
+          if (parsedResult.file && parsedResult.file.url) {
+            return parsedResult.file.url;
+          } else if (parsedResult.url) {
+            return parsedResult.url;
+          } else if (parsedResult.fileUrl) {
+            return parsedResult.fileUrl;
+          }
+          // If no URL found but status is success, return the full response
           return result;
         }
         
@@ -230,7 +244,7 @@ const KYCDocuments = () => {
         if (result.toLowerCase().includes('error') || result.toLowerCase().includes('failed')) {
           throw new Error(`Upload failed: ${result}`);
         }
-        // If it's not JSON and doesn't contain error keywords, assume success
+        // If it's not JSON and doesn't contain error keywords, assume it's a URL
         return result;
       }
     } catch (error) {
@@ -375,41 +389,64 @@ const KYCDocuments = () => {
         // Upload all selected files to image service first
         const uploadedFiles = {};
 
+        // Track upload progress and errors
+        const uploadErrors = [];
+        const progressTracker = {};
+
         for (const doc of documentList) {
           if (doc.type === 'file') {
             // Check if there's a newly selected file to upload
             if (selectedFiles[doc.key]) {
               try {
-                const fileResponse = await uploadFileToImageService(selectedFiles[doc.key]);
+                // Update progress indicator
+                setUploadProgress(prev => ({ ...prev, [doc.key]: 'uploading' }));
+                setUploadingFiles(prev => new Set([...prev, doc.key]));
                 
-                // Check if the response contains an error
-                try {
-                  const parsedResponse = JSON.parse(fileResponse);
-                  if (parsedResponse.status === 'error') {
-                    throw new Error(parsedResponse.message || 'File upload failed');
-                  }
-                } catch (parseError) {
-                  // If it's not JSON, assume it's a successful response
-                }
+                const fileUrl = await uploadFileToImageService(selectedFiles[doc.key]);
+                uploadedFiles[doc.key] = fileUrl;
+                setUploadProgress(prev => ({ ...prev, [doc.key]: 'completed' }));
                 
-                uploadedFiles[doc.key] = fileResponse;
+                console.log(`Successfully uploaded ${doc.label}`);
+                
               } catch (error) {
                 console.error(`Failed to upload ${doc.key}:`, error);
-                setAlert({
-                  open: true,
-                  message: `Failed to upload ${doc.label}: ${error.message}. Please check the file type and try again.`,
-                  severity: "error"
+                setUploadProgress(prev => ({ ...prev, [doc.key]: 'failed' }));
+                uploadErrors.push({
+                  document: doc.label,
+                  error: error.message,
+                  key: doc.key
                 });
-                setUploading(false);
-                return;
+                
+                // Continue with other uploads instead of stopping completely
+                continue;
+              } finally {
+                // Remove from uploading set
+                setUploadingFiles(prev => {
+                  const newSet = new Set(prev);
+                  newSet.delete(doc.key);
+                  return newSet;
+                });
               }
             } else if (documents[doc.key]) {
               // Use already uploaded file
               uploadedFiles[doc.key] = documents[doc.key];
+              setUploadProgress(prev => ({ ...prev, [doc.key]: 'existing' }));
             }
           } else if (doc.type === 'text') {
             uploadedFiles[doc.key] = documents[doc.key];
           }
+        }
+
+        // Handle upload errors
+        if (uploadErrors.length > 0) {
+          const errorMessages = uploadErrors.map(err => `${err.document}: ${err.error}`).join('\n');
+          setAlert({
+            open: true,
+            message: `Some files failed to upload:\n${errorMessages}\n\nPlease check the files and try again.`,
+            severity: "error"
+          });
+          setUploading(false);
+          return;
         }
 
         // Prepare payload for API
@@ -464,6 +501,8 @@ const KYCDocuments = () => {
           setOriginalData(updatedDocuments);
           setDocuments(updatedDocuments);
           setSelectedFiles({}); // Clear selected files
+          setUploadProgress({}); // Clear upload progress
+          setUploadingFiles(new Set()); // Clear uploading files
           setIsReadOnly(true);
           setIsEditing(false);
         } else {
@@ -558,23 +597,42 @@ const KYCDocuments = () => {
                     disabled={isReadOnly && !isEditing}
                   />
                   <label htmlFor={doc.key} className="file-upload-label">
-                    {uploading ? (
+                    {uploadingFiles.has(doc.key) ? (
                       <span>Uploading...</span>
+                    ) : uploadProgress[doc.key] === 'failed' ? (
+                      <span>Upload Failed - Click to Retry</span>
                     ) : (
                       <span>Choose Document</span>
                     )}
                   </label>
                   {selectedFiles[doc.key] && (
                     <div className="uploaded-file-info">
-                      <span className="file-name">✓ {selectedFiles[doc.key].name} selected</span>
+                      <span className="file-name">
+                        {uploadingFiles.has(doc.key) ? (
+                          <>⏳ {selectedFiles[doc.key].name} uploading...</>
+                        ) : uploadProgress[doc.key] === 'completed' ? (
+                          <>✅ {selectedFiles[doc.key].name} uploaded</>
+                        ) : uploadProgress[doc.key] === 'failed' ? (
+                          <>❌ {selectedFiles[doc.key].name} failed</>
+                        ) : (
+                          <>✓ {selectedFiles[doc.key].name} selected</>
+                        )}
+                      </span>
                       <button
                         type="button"
                         className="remove-file-btn"
-                        onClick={() => setSelectedFiles(prev => {
-                          const newFiles = { ...prev };
-                          delete newFiles[doc.key];
-                          return newFiles;
-                        })}
+                        onClick={() => {
+                          setSelectedFiles(prev => {
+                            const newFiles = { ...prev };
+                            delete newFiles[doc.key];
+                            return newFiles;
+                          });
+                          setUploadProgress(prev => {
+                            const newProgress = { ...prev };
+                            delete newProgress[doc.key];
+                            return newProgress;
+                          });
+                        }}
                         disabled={isReadOnly && !isEditing}
                       >
                         Remove
@@ -590,6 +648,12 @@ const KYCDocuments = () => {
                           target="_blank"
                           rel="noopener noreferrer"
                           className="file-url"
+                          style={{
+                            color: '#007bff',
+                            textDecoration: 'underline',
+                            cursor: 'pointer',
+                            wordBreak: 'break-all'
+                          }}
                         >
                           {documents[doc.key]}
                         </a>

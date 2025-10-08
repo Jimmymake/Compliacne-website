@@ -28,6 +28,8 @@ const RiskManagement = () => {
   const [errors, setErrors] = useState({});
   const [isUploading, setIsUploading] = useState(false);
   const [selectedFile, setSelectedFile] = useState(null);
+  const [uploadProgress, setUploadProgress] = useState('');
+  const [isUploadingFile, setIsUploadingFile] = useState(false);
   
   const [alert, setAlert] = useState({
     open: false,
@@ -78,10 +80,12 @@ const RiskManagement = () => {
     });
   };
 
-  // Upload file to API
-  const uploadSignatureFile = async (file) => {
+  // Upload file to API with enhanced error handling and URL extraction
+  const uploadSignatureFile = async (file, retryCount = 0) => {
     const formData = new FormData();
-    formData.append("file", file, "1f09c9a4-b8d3-4f50-bbeb-d13a5d340016");
+    // Use the actual file name instead of hardcoded name to preserve file extension
+    const fileName = file.name || `signature.${file.type.split('/')[1] || 'png'}`;
+    formData.append("file", file, fileName);
 
     const requestOptions = {
       method: "POST",
@@ -89,9 +93,91 @@ const RiskManagement = () => {
       redirect: "follow"
     };
 
-    const response = await fetch("https://images.cradlevoices.com/", requestOptions);
-    const result = await response.text();
-    return result;
+    try {
+      console.log(`Uploading signature file: ${fileName} (attempt ${retryCount + 1})`);
+      
+      const response = await fetch("https://images.cradlevoices.com/", requestOptions);
+      
+      if (!response.ok) {
+        const errorMessage = `Server error: ${response.status} ${response.statusText}`;
+        console.error('Upload failed:', errorMessage);
+        throw new Error(errorMessage);
+      }
+      
+      const result = await response.text();
+      console.log('Upload response:', result);
+      
+      // Parse the response to check for errors and extract URL
+      try {
+        const parsedResult = JSON.parse(result);
+        
+        // Check for various error formats
+        if (parsedResult.status === 'error') {
+          const errorMsg = parsedResult.message || 'Upload failed';
+          console.error('Server returned error:', errorMsg);
+          throw new Error(errorMsg);
+        }
+        
+        // Check for success indicators and extract URL
+        if (parsedResult.status === 'success') {
+          // Extract URL from the response structure
+          if (parsedResult.file && parsedResult.file.url) {
+            return parsedResult.file.url;
+          } else if (parsedResult.url) {
+            return parsedResult.url;
+          } else if (parsedResult.fileUrl) {
+            return parsedResult.fileUrl;
+          }
+          // If no URL found but status is success, return the full response
+          return result;
+        }
+        
+        // If no clear status, assume success if we got a response
+        return result;
+        
+      } catch (parseError) {
+        // If response is not JSON, check if it looks like an error
+        if (result.toLowerCase().includes('error') || result.toLowerCase().includes('failed')) {
+          throw new Error(`Upload failed: ${result}`);
+        }
+        // If it's not JSON and doesn't contain error keywords, assume it's a URL
+        return result;
+      }
+    } catch (error) {
+      console.error('Upload error:', error);
+      
+      // Retry logic for network errors (up to 2 retries)
+      if (retryCount < 2 && (
+        error.message.includes('NetworkError') || 
+        error.message.includes('Failed to fetch') ||
+        error.message.includes('timeout')
+      )) {
+        console.log(`Retrying upload (attempt ${retryCount + 2})...`);
+        await new Promise(resolve => setTimeout(resolve, 1000 * (retryCount + 1))); // Exponential backoff
+        return uploadSignatureFile(file, retryCount + 1);
+      }
+      
+      // Enhanced error messages based on error type
+      let userFriendlyMessage = 'Upload failed. Please try again.';
+      
+      if (error.message.includes('File type')) {
+        userFriendlyMessage = 'Invalid file type. Please upload a valid image file (JPEG, PNG, or GIF).';
+      } else if (error.message.includes('size') || error.message.includes('too large')) {
+        userFriendlyMessage = 'File is too large. Please upload a file smaller than 5MB.';
+      } else if (error.message.includes('NetworkError') || error.message.includes('Failed to fetch')) {
+        userFriendlyMessage = 'Network error. Please check your internet connection and try again.';
+      } else if (error.message.includes('Server error: 413')) {
+        userFriendlyMessage = 'File is too large for the server. Please upload a smaller file.';
+      } else if (error.message.includes('Server error: 415')) {
+        userFriendlyMessage = 'File type not supported. Please upload a different file format.';
+      } else if (error.message.includes('Server error: 500')) {
+        userFriendlyMessage = 'Server error. Please try again in a few moments.';
+      } else if (error.message.includes('Server error: 400')) {
+        userFriendlyMessage = 'Invalid file. Please check the file and try again.';
+      }
+      
+      throw new Error(userFriendlyMessage);
+    }
   };
 
   // Fetch user data and form status on component mount
@@ -152,6 +238,9 @@ const RiskManagement = () => {
       setFormData(originalData);
     }
     setErrors({});
+    setSelectedFile(null);
+    setUploadProgress('');
+    setIsUploadingFile(false);
   };
 
   // Helper function to get input props for read-only state
@@ -238,16 +327,24 @@ const RiskManagement = () => {
         let signatureResponse = formData.indroducer.signature;
         if (selectedFile) {
           try {
+            setIsUploadingFile(true);
+            setUploadProgress('uploading');
             signatureResponse = await uploadSignatureFile(selectedFile);
+            setUploadProgress('completed');
+            console.log('Signature uploaded successfully:', signatureResponse);
           } catch (uploadError) {
             console.error('Signature upload error:', uploadError);
+            setUploadProgress('failed');
             setAlert({
               open: true,
-              message: "Failed to upload signature. Please try again.",
+              message: `Failed to upload signature: ${uploadError.message}. Please try again.`,
               severity: "error"
             });
             setIsUploading(false);
+            setIsUploadingFile(false);
             return;
+          } finally {
+            setIsUploadingFile(false);
           }
         }
 
@@ -305,6 +402,8 @@ const RiskManagement = () => {
           setOriginalData(updatedFormData);
           setFormData(updatedFormData);
           setSelectedFile(null); // Clear selected file
+          setUploadProgress(''); // Clear upload progress
+          setIsUploadingFile(false); // Clear uploading state
           setIsReadOnly(true);
           setIsEditing(false);
         } else {
@@ -549,19 +648,34 @@ const RiskManagement = () => {
                 disabled={isReadOnly && !isEditing}
               />
               <label htmlFor="signature-upload" className="file-upload-label">
-                {isUploading ? (
+                {isUploadingFile ? (
                   <span>Uploading...</span>
+                ) : uploadProgress === 'failed' ? (
+                  <span>Upload Failed - Click to Retry</span>
                 ) : (
                   <span>Choose Signature Image</span>
                 )}
               </label>
               {selectedFile && (
                 <div className="uploaded-file-info">
-                  <span className="file-name">✓ {selectedFile.name} selected</span>
+                  <span className="file-name">
+                    {isUploadingFile ? (
+                      <>⏳ {selectedFile.name} uploading...</>
+                    ) : uploadProgress === 'completed' ? (
+                      <>✅ {selectedFile.name} uploaded</>
+                    ) : uploadProgress === 'failed' ? (
+                      <>❌ {selectedFile.name} failed</>
+                    ) : (
+                      <>✓ {selectedFile.name} selected</>
+                    )}
+                  </span>
                   <button 
                     type="button" 
                     className="remove-file-btn"
-                    onClick={() => setSelectedFile(null)}
+                    onClick={() => {
+                      setSelectedFile(null);
+                      setUploadProgress('');
+                    }}
                     disabled={isReadOnly && !isEditing}
                   >
                     Remove
@@ -577,6 +691,12 @@ const RiskManagement = () => {
                       target="_blank" 
                       rel="noopener noreferrer"
                       className="file-url"
+                      style={{
+                        color: '#007bff',
+                        textDecoration: 'underline',
+                        cursor: 'pointer',
+                        wordBreak: 'break-all'
+                      }}
                     >
                       {formData.indroducer.signature}
                     </a>
