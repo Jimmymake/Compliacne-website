@@ -104,8 +104,21 @@ const MerchantDetail = ({ merchant, onBack }) => {
     }
     
     const completionSummary = merchant.fullUserData.completionSummary;
-    const completed = Object.values(completionSummary).filter(Boolean).length;
-    const total = Object.keys(completionSummary).length;
+    
+    // Fixed 6 required steps
+    const requiredSteps = [
+      'companyinformation',
+      'ubo', 
+      'paymentandprosessing',
+      'settlmentbankdetails',
+      'riskmanagement',
+      'kycdocs'
+    ];
+    
+    // Count completed steps from the required list
+    const completed = requiredSteps.filter(step => completionSummary[step] === true).length;
+    const total = 6; // Fixed total steps
+    
     return Math.round((completed / total) * 100);
   };
 
@@ -126,7 +139,8 @@ const MerchantDetail = ({ merchant, onBack }) => {
     ];
     
     // Check if all required steps are completed (true)
-    return requiredSteps.every(step => completionSummary[step] === true);
+    const completedSteps = requiredSteps.filter(step => completionSummary[step] === true).length;
+    return completedSteps === 6; // All 6 steps completed
   };
 
   // Helper function to render data with different colors
@@ -260,7 +274,7 @@ const MerchantDetail = ({ merchant, onBack }) => {
         "notes": approvalNotes || "Approved after thorough review of all compliance documents"
       });
 
-      const response = await fetch(`http://localhost:4000/api/admin/approve-merchant/${merchantId}`, {
+      const response = await fetch(`https://complianceapis.mam-laka.com/api/admin/approve-merchant/${merchantId}`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -312,7 +326,7 @@ const MerchantDetail = ({ merchant, onBack }) => {
         "notes": rejectionNotes || "Rejected due to incomplete or insufficient documentation"
       });
 
-      const response = await fetch(`http://localhost:4000/api/admin/reject-merchant/${merchantId}`, {
+      const response = await fetch(`https://complianceapis.mam-laka.com/api/admin/reject-merchant/${merchantId}`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,

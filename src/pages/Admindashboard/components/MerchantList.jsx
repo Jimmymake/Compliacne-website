@@ -65,7 +65,7 @@ const MerchantList = ({ merchants, onMerchantSelect, onMerchantDetail, initialFi
     try {
       setLoading(true);
       const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:4000/api/user/profiles', {
+      const response = await fetch('https://complianceapis.mam-laka.com/api/user/profiles', {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -99,8 +99,21 @@ const MerchantList = ({ merchants, onMerchantSelect, onMerchantDetail, initialFi
 
   const getCompletionPercentage = (completionSummary) => {
     if (!completionSummary) return 0;
-    const completed = Object.values(completionSummary).filter(Boolean).length;
-    const total = Object.keys(completionSummary).length;
+    
+    // Fixed 6 required steps
+    const requiredSteps = [
+      'companyinformation',
+      'ubo', 
+      'paymentandprosessing',
+      'settlmentbankdetails',
+      'riskmanagement',
+      'kycdocs'
+    ];
+    
+    // Count completed steps from the required list
+    const completed = requiredSteps.filter(step => completionSummary[step] === true).length;
+    const total = 6; // Fixed total steps
+    
     return Math.round((completed / total) * 100);
   };
 
@@ -207,8 +220,8 @@ const MerchantList = ({ merchants, onMerchantSelect, onMerchantDetail, initialFi
     },
     {
       label: 'Approved',
-      value: 'completed',
-      count: users.filter(u => u.user.onboardingStatus === 'completed' && u.user.role !== 'admin').length,
+      value: 'approved',
+      count: users.filter(u => u.user.onboardingStatus === 'approved' && u.user.role !== 'admin').length,
       icon: <CompletedIcon />,
       color: 'success',
       description: 'Admin approved users'
@@ -258,7 +271,7 @@ const MerchantList = ({ merchants, onMerchantSelect, onMerchantDetail, initialFi
     return matchesStatus && matchesSearch;
   });
 
-  // Debug logging for pending tab
+  // Debug logging for pending and approved tabs
   if (statusFilter === 'pending') {
     console.log('Pending tab debug:', {
       totalUsers: users.length,
@@ -268,6 +281,23 @@ const MerchantList = ({ merchants, onMerchantSelect, onMerchantDetail, initialFi
       pendingNonAdminUsers: users.filter(u => u.user.onboardingStatus === 'pending' && u.user.role !== 'admin'),
       filteredUsers: filteredUsers.length,
       searchTerm
+    });
+  }
+
+  if (statusFilter === 'approved') {
+    console.log('Approved tab debug:', {
+      totalUsers: users.length,
+      statusFilter,
+      approvedUsers: users.filter(u => u.user.onboardingStatus === 'approved'),
+      nonAdminUsers: users.filter(u => u.user.role !== 'admin'),
+      approvedNonAdminUsers: users.filter(u => u.user.onboardingStatus === 'approved' && u.user.role !== 'admin'),
+      filteredUsers: filteredUsers.length,
+      searchTerm,
+      allUserStatuses: users.map(u => ({ 
+        name: u.user.fullname, 
+        status: u.user.onboardingStatus, 
+        role: u.user.role 
+      }))
     });
   }
 
@@ -463,6 +493,9 @@ const MerchantList = ({ merchants, onMerchantSelect, onMerchantDetail, initialFi
                 {statusFilter === 'pending' && (
                   <span> • Debug: {users.filter(u => u.user.onboardingStatus === 'pending').length} pending users found</span>
                 )}
+                {statusFilter === 'approved' && (
+                  <span> • Debug: {users.filter(u => u.user.onboardingStatus === 'approved').length} approved users found</span>
+                )}
               </Typography>
             </Box>
             <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
@@ -601,7 +634,22 @@ const MerchantList = ({ merchants, onMerchantSelect, onMerchantDetail, initialFi
                           label={userData.user.onboardingStatus}
                           color={getStatusColor(userData.user.onboardingStatus)}
                           size="small"
-                          icon={userData.user.onboardingStatus === 'pending' ? <PendingIcon /> : <CompletedIcon />}
+                          icon={
+                            userData.user.onboardingStatus === 'pending' ? <PendingIcon /> : 
+                            userData.user.onboardingStatus === 'approved' ? <CompletedIcon /> :
+                            userData.user.onboardingStatus === 'rejected' ? <RejectedIcon /> :
+                            <CompletedIcon />
+                          }
+                          sx={{
+                            ...(userData.user.onboardingStatus === 'approved' && {
+                              backgroundColor: '#4caf50',
+                              color: 'white',
+                              fontWeight: 'bold',
+                              '& .MuiChip-icon': {
+                                color: 'white'
+                              }
+                            })
+                          }}
                         />
                       </TableCell>
                       <TableCell>

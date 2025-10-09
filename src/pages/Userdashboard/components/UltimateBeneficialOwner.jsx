@@ -43,7 +43,7 @@ const UltimateBeneficialOwner = () => {
         if (!token) return;
 
         // Fetch user profile data
-        const profileResponse = await fetch('http://localhost:4000/api/user/profile', {
+        const profileResponse = await fetch('https://complianceapis.mam-laka.com/api/user/profile', {
           headers: {
             'Authorization': `Bearer ${token}`
           }
@@ -58,7 +58,7 @@ const UltimateBeneficialOwner = () => {
         }
 
         // Fetch form status
-        const statusResponse = await fetch('http://localhost:4000/api/user/form-status', {
+        const statusResponse = await fetch('https://complianceapis.mam-laka.com/api/user/form-status', {
           headers: {
             'Authorization': `Bearer ${token}`
           }
@@ -182,7 +182,7 @@ const UltimateBeneficialOwner = () => {
 
         // Use PUT for updates, POST for new submissions
         const method = originalData ? 'PUT' : 'POST';
-        const response = await fetch('http://localhost:4000/api/uboinfo', {
+        const response = await fetch('https://complianceapis.mam-laka.com/api/uboinfo', {
           method: method,
           headers: {
             'Content-Type': 'application/json',

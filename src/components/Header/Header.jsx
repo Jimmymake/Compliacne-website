@@ -25,7 +25,7 @@ const Header = ({ currentStep, totalSteps, onMenuClick }) => {
         const token = localStorage.getItem('token');
         if (!token) return;
 
-        const response = await fetch('http://localhost:4000/api/user/profile', {
+        const response = await fetch('https://complianceapis.mam-laka.com/api/user/profile', {
           headers: {
             'Authorization': `Bearer ${token}`
           }

@@ -8,7 +8,7 @@ import react from '@vitejs/plugin-react'
 export default {
   server: {
     allowedHosts: [
-      '08ef9183b62c.ngrok-free.app' // 👈 Add your ngrok domain here
+      'b9cb3a1d5f0e.ngrok-free.app' // 👈 Add your ngrok domain here
     ],
   },
 };

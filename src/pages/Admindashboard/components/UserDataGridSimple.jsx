@@ -54,7 +54,7 @@ const UserDataGridSimple = ({ selectedMerchant = null, onBackToAll = null }) => 
     try {
       setLoading(true);
       const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:4000/api/user/profiles', {
+      const response = await fetch('https://complianceapis.mam-laka.com/api/user/profiles', {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -89,8 +89,21 @@ const UserDataGridSimple = ({ selectedMerchant = null, onBackToAll = null }) => 
 
   const getCompletionPercentage = (completionSummary) => {
     if (!completionSummary) return 0;
-    const completed = Object.values(completionSummary).filter(Boolean).length;
-    const total = Object.keys(completionSummary).length;
+    
+    // Fixed 6 required steps
+    const requiredSteps = [
+      'companyinformation',
+      'ubo', 
+      'paymentandprosessing',
+      'settlmentbankdetails',
+      'riskmanagement',
+      'kycdocs'
+    ];
+    
+    // Count completed steps from the required list
+    const completed = requiredSteps.filter(step => completionSummary[step] === true).length;
+    const total = 6; // Fixed total steps
+    
     return Math.round((completed / total) * 100);
   };
 

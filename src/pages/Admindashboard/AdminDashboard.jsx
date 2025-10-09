@@ -50,7 +50,7 @@ const AdminDashboard = () => {
     const fetchData = async () => {
       try {
         const token = localStorage.getItem('token');
-        const response = await fetch('http://localhost:4000/api/user/profiles', {
+        const response = await fetch('https://complianceapis.mam-laka.com/api/user/profiles', {
           headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json'
@@ -111,9 +111,19 @@ const AdminDashboard = () => {
         const user = userData.user;
         const completionSummary = userData.completionSummary;
         
-        // Calculate completion statistics
+        // Calculate completion statistics - Fixed 6 steps
         const totalSteps = 6;
-        const completedSteps = Object.values(completionSummary).filter(Boolean).length;
+        const requiredSteps = [
+          'companyinformation',
+          'ubo', 
+          'paymentandprosessing',
+          'settlmentbankdetails',
+          'riskmanagement',
+          'kycdocs'
+        ];
+        
+        // Count completed steps from the required list
+        const completedSteps = requiredSteps.filter(step => completionSummary[step] === true).length;
         const progress = Math.round((completedSteps / totalSteps) * 100);
         
         // Determine status based on completion

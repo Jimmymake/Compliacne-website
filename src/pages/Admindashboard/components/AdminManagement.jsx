@@ -101,7 +101,7 @@ const AdminManagement = () => {
       // Prepare payload (exclude confirmPassword)
       const { confirmPassword, ...payload } = formData;
       
-      const response = await fetch('http://localhost:4000/api/admin/create', {
+      const response = await fetch('https://complianceapis.mam-laka.com/api/admin/create', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

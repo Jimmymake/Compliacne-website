@@ -40,7 +40,7 @@ const UserDashboard = () => {
         if (!token) return;
 
         // Fetch user profile data to get completion summary
-        const profileResponse = await fetch('http://localhost:4000/api/user/profile', {
+        const profileResponse = await fetch('https://complianceapis.mam-laka.com/api/user/profile', {
           headers: {
             'Authorization': `Bearer ${token}`
           }
